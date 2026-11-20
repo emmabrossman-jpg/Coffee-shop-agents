@@ -4,7 +4,7 @@ Run:   .venv/bin/python sim.py [--cap N] [--out PATH]
 Fake:  SIM_FAKE=1 .venv/bin/python sim.py   (no API key needed, canned answers)
 Memory, retrieval and world rules live here; the model only supplies words and choices.
 """
-import argparse, json, os, re, sys, tempfile
+import argparse, json, math, os, re, sys, tempfile
 from datetime import datetime, timezone
 
 MODEL = "claude-haiku-5-5"
@@ -28,19 +28,24 @@ SEEDS = {
     "leo": ("I have worked here two years and have not had a raise.", 6),
     "sam": ("The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.", 8),
 }
+HABITS = {  # prompt-only nudges, each about the character's own job (B10 safe)
+    "dana": "You run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).",
+    "leo": "Your job is mostly the counter and the shop floor, serving customers; the back room is only for quick restocks.",
+    "sam": "Dana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.",
+}
 DEFAULT_ZONE = {"dana": "counter", "leo": "counter", "sam": "window_table"}
-OFFER_RE = re.compile(r"offer|sell|sale|buyout|buy out|acquir")
-MONEY_RE = re.compile(r"money|raise|pay|salary|wage|offer|sell|sale|buyout|buy out|acquir|price|dollar|\$")
+OFFER_RE = re.compile(r"\b(?:buyout|buy[- ]out|buy (?:the|our|this|my) shop|sell(?:ing)? (?:the|our|this|my) shop|offer to buy"
+                      r"|the offer|acquire|acquisition|chain wants)\b", re.I)
+MONEY_RE = re.compile(r"\b(?:money|raises?|pay|paid|salary|wages?|offers?|sell|selling|sold|sale|buyout|buy out|acquir\w*"
+                      r"|prices?|dollars?)\b|\$", re.I)
+RESERVE = 12  # F2: calls kept for 5pm; once remaining calls reach this, regular slots skip to 5pm and parse retries stop
 STOP = set("a an the and or but i me my you your we our he she her his it its is are was were be been to of in on at for with "
            "that this what who how do does did not no so if as by from about up out today will would can could just have has had".split())
 
 
-class CapReached(Exception):
-    pass
-
-
-class SimError(Exception):
-    pass
+class CapReached(Exception): pass
+class SimError(Exception): pass
+class SkipToClose(Exception): pass      # F2: a regular slot hit RESERVE; jump to 5pm
 
 
 class Sim:
@@ -56,6 +61,8 @@ class Sim:
     def call(self, char, purpose, system, user):
         if self.calls >= self.cap:
             raise CapReached()
+        if self.slot["time"] != "5pm" and self.cap - self.calls <= RESERVE:
+            raise SkipToClose()
         self.calls += 1
         self.slot["prompts"].append({"character": char, "purpose": purpose, "text": system + "\n\n" + user})
         if self.fake:
@@ -64,7 +71,7 @@ class Sim:
         if self.client is None:
             self.client = anthropic.Anthropic()
         try:
-            r = self.client.messages.create(model=MODEL, max_tokens=2000, system=system,
+            r = self.client.messages.create(model=MODEL, max_tokens=400, system=system,
                                             output_config={"effort": "low"},
                                             messages=[{"role": "user", "content": user}])
         except (anthropic.AuthenticationError, anthropic.PermissionDeniedError) as e:
@@ -80,6 +87,8 @@ class Sim:
     def ask_json(self, char, purpose, system, user, check):
         """B8: JSON answer, one retry, else None (caller applies the safe default)."""
         for attempt in range(2):
+            if attempt and self.cap - self.calls <= RESERVE:
+                break
             u = user if attempt == 0 else user + "\n\nYour last answer was not valid JSON. Reply with the JSON object only."
             data = parse_json(self.call(char, purpose, system, u))
             if data is not None and check(data):
@@ -89,7 +98,7 @@ class Sim:
     # ---------- memory ----------
     def add_memory(self, char, text, importance, source):
         m = {"id": f"{char}-{len(self.mem[char]) + 1}", "character": char, "time": self.slot["time"],
-             "text": text.strip(), "importance": max(1, min(10, int(importance))), "source": source}
+             "text": clip(text), "importance": importance_int(importance), "source": source}
         self.mem[char].append(m)
         self.slot["memories_written"].append(dict(m))
 
@@ -111,7 +120,7 @@ class Sim:
     def system(self, char):
         c = CHARS[char]
         return (f"You are {c['name']}, {c['role']} at an independent coffee shop.\nYour goal: {c['goal']}.\n"
-                f"Your limitation: {c['limitation']}.\nStay in character. Be brief and natural. "
+                f"Your limitation: {c['limitation']}.\n{HABITS[char]}\nStay in character. Be brief and natural. "
                 "Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.")
 
     def mem_block(self, mems):
@@ -127,7 +136,7 @@ class Sim:
         d = self.ask_json(char, "decide", self.system(char), user, lambda d: isinstance(d.get("zone"), str))
         if d is None:
             return self.apply(char, i, None, "fallback: model output did not parse")
-        return self.apply(char, i, d["zone"].strip().lower(), str(d.get("reason", "")).strip())
+        return self.apply(char, i, d["zone"].strip().lower(), clip(d.get("reason", "")))
 
     def apply(self, char, i, req, reason):
         """B7: the backend enforces world rules and limitations."""
@@ -149,6 +158,7 @@ class Sim:
         """B9/B10: up to 4 turns, round robin, each prompt private to the speaker."""
         conv = {"zone": zone, "participants": people, "turns": []}
         names = ", ".join(CHARS[p]["name"] for p in people)
+        self.slot["conversations"].append(conv)   # logged up front so a stop mid-talk keeps the turns
         for n in range(4):
             sp = people[n % len(people)]
             so_far = "\n".join(f"{CHARS[t['speaker']]['name']}: {t['text']}" for t in conv["turns"]) or "(nobody has spoken yet)"
@@ -166,33 +176,31 @@ class Sim:
             d = self.ask_json(sp, "speak", self.system(sp), user, lambda d: isinstance(d.get("text"), str))
             if d is None:
                 continue                          # B8: the character says nothing
-            text = d["text"].strip()
+            text = clip(d["text"])
             if not text:
                 break
-            if sp == "leo" and "sam" in people and MONEY_RE.search(text.lower()):
+            if sp == "leo" and "sam" in people and (MONEY_RE.search(text) or OFFER_RE.search(text)):
                 self.add_memory("leo", "I almost talked about money in front of a customer and held my tongue.", 3, "observation")
                 continue                          # B7: backend blocks Leo's forbidden topic
             conv["turns"].append({"speaker": sp, "text": text})
-            if self.knows[sp] and OFFER_RE.search(text.lower()):
+            if self.knows[sp] and OFFER_RE.search(text):
                 for p in people:
                     if not self.knows[p]:
                         self.knows[p] = True
                         self.slot["offer_learned"].append({"character": p, "from": sp, "zone": zone})
         if not conv["turns"]:
-            return
-        self.slot["conversations"].append(conv)
+            return self.slot["conversations"].remove(conv)
         transcript = "\n".join(f"{CHARS[t['speaker']]['name']}: {t['text']}" for t in conv["turns"])
         for p in people:                          # B2: each participant writes its own memory
             user = (f"It is {self.slot['time']}. You just had this conversation at the {zone}:\n{transcript}\n\n"
                     "Write one line, from your own point of view, about what you want to remember.\n"
                     'Answer as {"memory": "<one line>", "importance": <1 to 10>}')
             d = self.ask_json(p, "memory", self.system(p), user,
-                              lambda d: isinstance(d.get("memory"), str) and d["memory"].strip()
-                              and isinstance(d.get("importance"), (int, float)))
+                              lambda d: isinstance(d.get("memory"), str) and d["memory"].strip())
             if d is None:
                 self.add_memory(p, f"I talked with {names} at the {zone}.", 3, "observation")
             else:
-                self.add_memory(p, d["memory"], d["importance"], "conversation")
+                self.add_memory(p, d["memory"], d.get("importance"), "conversation")
 
     def new_slot(self, i):
         self.slot = {"index": i, "time": SLOTS[i], "locations": {}, "decisions": [], "conversations": [],
@@ -203,28 +211,33 @@ class Sim:
         self.slot["locations"] = dict(self.loc)
         self.slot["knows_offer"] = dict(self.knows)
 
+    def talk(self, note=None):
+        for z in ZONES:
+            people = [c for c in IDS if self.loc[c] == z]
+            if len(people) >= 2:
+                self.converse(z, people, note)
+
     def run(self):
+        skip = False
         for i, t in enumerate(SLOTS):
             self.new_slot(i)
             try:
                 if i == 0:
                     for c in IDS:
                         self.add_memory(c, *SEEDS[c], "seed")
-                note = None
                 if t == "5pm":
                     for c in IDS:
                         self.apply(c, i, "counter", "Closing time: everyone meets at the counter.")
-                    note = self.finale_decision()
-                else:
-                    for c in IDS:
-                        self.decide(c, i)
-                for z in ZONES:
-                    people = [c for c in IDS if self.loc[c] == z]
-                    if len(people) >= 2:
-                        self.converse(z, people, note if t == "5pm" else None)
-                if t == "5pm":
+                    self.talk(self.finale_decision())
                     self.finale = self.pending
                     self.finale["diaries"] = {c: self.diary(c) for c in IDS}
+                elif not skip:
+                    try:
+                        for c in IDS:
+                            self.decide(c, i)
+                        self.talk()
+                    except SkipToClose:
+                        skip = True
             finally:
                 self.close_slot()
 
@@ -234,10 +247,11 @@ class Sim:
         user = (f"It is 5pm, closing time. Your answer to the chain's buyout offer is due now.\n"
                 f"Your most relevant memories:\n{self.mem_block(mems)}\n\n"
                 'Decide. Answer as {"decision": "sell" or "stay", "reason": "<one sentence>"}')
-        d = self.ask_json("dana", "finale", self.system("dana"), user, lambda d: d.get("decision") in ("sell", "stay"))
+        d = self.ask_json("dana", "finale", self.system("dana"), user, lambda d: norm_decision(d.get("decision")) in ("sell", "stay"))
         if d is None:
             d = {"decision": "stay", "reason": "fallback: model output did not parse"}
-        self.pending = {"decision": d["decision"], "reason": str(d.get("reason", "")).strip(), "diaries": None}
+        d["decision"] = norm_decision(d["decision"])
+        self.pending = {"decision": d["decision"], "reason": clip(d.get("reason", "")), "diaries": None}
         return (f"You have decided to {d['decision'].upper()} (reason: {self.pending['reason']}). "
                 "Announce your decision about the buyout offer to everyone at the counter now.")
 
@@ -247,11 +261,27 @@ class Sim:
                 f"Your most relevant memories of today:\n{self.mem_block(mems)}\n\n"
                 'Write your private diary entry for today in 3 to 4 sentences.\nAnswer as {"diary": "<entry>"}')
         d = self.ask_json(char, "diary", self.system(char), user, lambda d: isinstance(d.get("diary"), str) and d["diary"].strip())
-        return d["diary"].strip() if d else "fallback: model output did not parse"
+        return clip(d["diary"]) if d else "fallback: model output did not parse"
 
 
 def words(text):
     return {w for w in re.findall(r"[a-z']+", text.lower()) if w not in STOP and len(w) > 2}
+
+
+def clip(v):                                        # F10: cap any stored text field
+    return str(v).strip()[:1000]
+
+
+def norm_decision(v):                               # F3: "Sell." -> "sell"
+    return re.sub(r"[^\w]+$", "", str(v).strip().lower())
+
+
+def importance_int(v):                              # F1: int 1 to 10, default 5 for NaN, inf, junk
+    try:
+        f = float(v)
+    except (TypeError, ValueError, OverflowError):
+        return 5
+    return max(1, min(10, int(f))) if math.isfinite(f) else 5
 
 
 def parse_json(text):
@@ -289,7 +319,7 @@ def write_events(sim, path, completed, stop_reason):
            "finale": sim.finale if completed else None}
     text = json.dumps(out, indent=2, ensure_ascii=False)
     key = os.environ.get("ANTHROPIC_API_KEY")
-    if key and key in text:                         # B14 belt and braces
+    if key and len(key) >= 20 and key in text:                         # B14 belt and braces
         text = text.replace(key, "[REDACTED]")
     d = os.path.dirname(os.path.abspath(path))
     fd, tmp = tempfile.mkstemp(dir=d, suffix=".tmp")
@@ -316,7 +346,13 @@ def main():
         reason = "call_cap"
     except SimError as e:
         reason = f"error: {e}"
-    write_events(sim, a.out, completed, reason)
+    except Exception as e:                          # F1: never lose the partial log; no message text
+        reason = f"error: {type(e).__name__}"
+    try:
+        write_events(sim, a.out, completed, reason)
+    except Exception as e:
+        print(f"Could not write {a.out} ({type(e).__name__})", file=sys.stderr)
+        sys.exit(2)
     print(f"{'Completed' if completed else 'Stopped (' + reason + ')'}: {len(sim.slots)} slots, {sim.calls} calls -> {a.out}")
     sys.exit(0 if completed else 2)
 

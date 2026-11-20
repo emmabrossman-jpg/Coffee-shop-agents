@@ -279,7 +279,8 @@
 
       var retrieved = {};
       arr(slot.retrievals).forEach(function (r) {
-        if (r && r.character === c.id) arr(r.memory_ids).forEach(function (m) { retrieved[m] = (retrieved[m] || []).concat(r.purpose || ""); });
+        if (r && r.character === c.id) arr(r.memory_ids).forEach(function (m) { retrieved[m] = retrieved[m] || [];
+          if (r.purpose && retrieved[m].indexOf(r.purpose) < 0) retrieved[m].push(r.purpose); });
       });
       card.appendChild(el("h2", null, "Memory stream"));
       var lg = el("div", "legend"); lg.appendChild(el("span", "sw")); lg.appendChild(document.createTextNode("retrieved this slot"));

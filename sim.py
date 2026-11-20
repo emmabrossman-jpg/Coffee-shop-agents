@@ -30,14 +30,14 @@ SEEDS = {
 }
 HABITS = {  # prompt-only nudges, each about the character's own job (B10 safe)
     "dana": "You run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).",
-    "leo": "Your job is mostly the counter and the shop floor, serving customers; the back room is only for quick restocks.",
+    "leo": "You work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.",
     "sam": "Dana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.",
 }
 DEFAULT_ZONE = {"dana": "counter", "leo": "counter", "sam": "window_table"}
 OFFER_RE = re.compile(r"\b(?:buyout|buy[- ]out|buy (?:the|our|this|my) shop|sell(?:ing)? (?:the|our|this|my) shop|offer to buy"
                       r"|the offer|acquire|acquisition|chain wants)\b", re.I)
 MONEY_RE = re.compile(r"\b(?:money|raises?|pay|paid|salary|wages?|offers?|sell|selling|sold|sale|buyout|buy out|acquir\w*"
-                      r"|prices?|dollars?)\b|\$", re.I)
+                      r"|prices?|dollars?|terms|deal)\b|\$", re.I)
 RESERVE = 12  # F2: calls kept for 5pm; once remaining calls reach this, regular slots skip to 5pm and parse retries stop
 STOP = set("a an the and or but i me my you your we our he she her his it its is are was were be been to of in on at for with "
            "that this what who how do does did not no so if as by from about up out today will would can could just have has had".split())
@@ -165,7 +165,7 @@ class Sim:
             mems = self.retrieve(sp, "speak", f"{zone} with {names}. {so_far} {CHARS[sp]['goal']}")
             extra = ""
             if sp == "leo" and "sam" in people:
-                extra = "\nA customer (Sam) is in this zone right now, so you must not discuss money, your raise, or any sale of the shop.\n"
+                extra = "\nA customer (Sam) is in this zone right now, so you must not discuss money, your raise, pay, terms, or any sale of the shop, even if someone else brings it up. Keep it to warm small talk or serving.\n"
             if note and sp == "dana":
                 extra += f"\n{note}\n"
             others = ", ".join(CHARS[p]["name"] for p in people if p != sp)

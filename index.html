@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coffee Shop Agents</title>
+<style>
+  :root {
+    --bg: #f6f3ee;
+    --surface: #ffffff;
+    --surface-2: #faf8f4;
+    --text: #1f1c18;
+    --muted: #6b645b;
+    --border: #e2dcd2;
+    --accent: #8a5a2b;
+    --warn-bg: #fdecea;
+    --warn-text: #9b2c1f;
+    --hl-bg: #fff4cc;
+    --hl-border: #e0b400;
+    --know: #2f8f4e;
+    --unknown: #a39b90;
+    --dana: #c2571a;
+    --leo: #1a7f7a;
+    --sam: #2563b8;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16140f;
+      --surface: #211e19;
+      --surface-2: #1b1914;
+      --text: #ece6dc;
+      --muted: #a69e92;
+      --border: #3a352d;
+      --accent: #d9a46b;
+      --warn-bg: #3a1d18;
+      --warn-text: #f3a597;
+      --hl-bg: #3b3214;
+      --hl-border: #c9a227;
+      --know: #5cc27f;
+      --unknown: #6f675c;
+      --dana: #f08a4b;
+      --leo: #3fc0b8;
+      --sam: #6aa3f0;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+  }
+  header h1 { font-size: 18px; margin: 0; }
+  .file-label { font-size: 12px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; }
+  .controls { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .clock { text-align: center; min-width: 110px; }
+  .clock .time { font-size: 20px; font-weight: 700; color: var(--accent); }
+  .clock .count { font-size: 12px; color: var(--muted); }
+  button {
+    font: inherit; cursor: pointer;
+    background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 14px;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: 0.4; cursor: default; }
+  main { max-width: 1280px; margin: 0 auto; padding: 16px; }
+  .banner { background: var(--warn-bg); color: var(--warn-text); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 10px; }
+  .floor { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .zone { border: 1px dashed var(--border); border-radius: 10px; padding: 10px; min-height: 92px; background: var(--surface-2); }
+  .zone.out { grid-column: 1 / -1; min-height: 0; border-style: dotted; }
+  .zone .zname { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  .tokens { display: flex; flex-wrap: wrap; gap: 6px; }
+  .token {
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 999px; padding: 3px 10px 3px 4px;
+    background: var(--surface); border: 2px solid currentColor; font-weight: 600; font-size: 14px;
+  }
+  .token .dot { width: 22px; height: 22px; border-radius: 50%; background: currentColor; display: grid; place-items: center; font-size: 12px; }
+  .token .dot span { color: var(--surface); }
+  .know { font-size: 11px; font-weight: 600; border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+  .know.yes { background: var(--know); color: var(--surface); }
+  .know.no { border: 1px solid var(--unknown); color: var(--muted); }
+  .learned { font-size: 12px; color: var(--know); font-weight: 600; margin-top: 4px; }
+  .empty { color: var(--muted); font-style: italic; }
+  .convo { margin-bottom: 12px; }
+  .convo .where { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .turn { margin: 0 0 8px; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); border-left: 4px solid currentColor; }
+  .turn .who { font-weight: 700; font-size: 13px; }
+  .turn .txt { color: var(--text); }
+  .decisions { list-style: none; padding: 0; margin: 0; }
+  .decisions li { padding: 8px 0; border-top: 1px solid var(--border); font-size: 14px; }
+  .decisions li:first-child { border-top: none; }
+  .decisions .who { font-weight: 700; }
+  .flag { display: block; margin-top: 4px; background: var(--warn-bg); color: var(--warn-text); border-radius: 6px; padding: 4px 8px; font-size: 13px; }
+  .flag b { text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; margin-right: 6px; }
+  .chars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+  .char h3 { margin: 0; font-size: 17px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .char .role { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .char dl { margin: 0 0 10px; font-size: 13px; }
+  .char dt { font-weight: 700; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; }
+  .char dd { margin: 0; }
+  .mems { list-style: none; padding: 0; margin: 0; max-height: 340px; overflow-y: auto; }
+  .mem { font-size: 13px; padding: 6px 8px; border-radius: 8px; margin-bottom: 4px; border: 1px solid transparent; }
+  .mem.hl { background: var(--hl-bg); border-color: var(--hl-border); }
+  .mem.new .meta::after { content: " new"; color: var(--accent); font-weight: 700; }
+  .mem .meta { font-size: 11px; color: var(--muted); }
+  .legend { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--hl-bg); border: 1px solid var(--hl-border); vertical-align: middle; margin-right: 4px; }
+  .final { text-align: center; padding: 24px 14px; }
+  .final .verdict { font-size: 40px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin: 4px 0; }
+  .final .reason { font-size: 17px; max-width: 640px; margin: 0 auto; }
+  .diaries { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+  .diary h3 { margin: 0 0 8px; font-size: 17px; }
+  .diary p { margin: 0; font-style: italic; }
+  .c-dana { color: var(--dana); } .c-leo { color: var(--leo); } .c-sam { color: var(--sam); }
+  @media (max-width: 860px) {
+    .grid, .chars, .diaries { grid-template-columns: minmax(0, 1fr); }
+    .controls { margin-left: 0; width: 100%; justify-content: space-between; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Coffee Shop Agents</h1>
+  <span class="file-label" id="fileLabel">Loading...</span>
+  <div class="controls">
+    <button id="prev" aria-label="Previous slot">Previous</button>
+    <div class="clock"><div class="time" id="clockTime">...</div><div class="count" id="clockCount"></div></div>
+    <button id="next" aria-label="Next slot">Next</button>
+  </div>
+</header>
+<main id="app"><p class="empty">Loading the day...</p></main>
+
+<script>
+(function () {
+  "use strict";
+  var ZONES = ["counter", "back_room", "window_table", "patio"];
+  var ZONE_NAMES = { counter: "Counter", back_room: "Back room", window_table: "Window table", patio: "Patio", out: "Out of shop" };
+  var KNOWN_COLORS = { dana: 1, leo: 1, sam: 1 };
+  var data = null, loadedFile = "", idx = 0;
+  var app = document.getElementById("app");
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined && text !== null) e.textContent = String(text);
+    return e;
+  }
+  function arr(x) { return Array.isArray(x) ? x : []; }
+  function obj(x) { return x && typeof x === "object" && !Array.isArray(x) ? x : {}; }
+  function chars() { return arr(data.characters); }
+  function slots() { return arr(data.slots); }
+  function nameOf(id) {
+    var c = chars().find(function (c) { return c && c.id === id; });
+    return c && c.name ? c.name : (id ? String(id).charAt(0).toUpperCase() + String(id).slice(1) : "Unknown");
+  }
+  function colorCls(id) { return KNOWN_COLORS[id] ? "c-" + id : ""; }
+  function zoneName(z) { return ZONE_NAMES[z] || (z ? String(z).replace(/_/g, " ") : "Unknown"); }
+
+  function knowBadge(slot, id) {
+    var k = obj(slot && slot.knows_offer)[id];
+    return el("span", "know " + (k ? "yes" : "no"), k ? "knows offer" : "does not know");
+  }
+  function learnedFrom(slot, id) {
+    var l = arr(slot && slot.offer_learned).find(function (o) { return o && o.character === id; });
+    if (!l) return null;
+    var txt = "learned from " + nameOf(l.from) + (l.zone ? " (" + zoneName(l.zone) + ")" : "");
+    return el("div", "learned", txt);
+  }
+
+  function token(slot, id) {
+    var t = el("span", "token " + colorCls(id));
+    var d = el("span", "dot"); d.appendChild(el("span", null, nameOf(id).charAt(0)));
+    t.appendChild(d);
+    t.appendChild(el("span", null, nameOf(id)));
+    t.appendChild(knowBadge(slot, id));
+    var wrap = el("div");
+    wrap.appendChild(t);
+    var lf = learnedFrom(slot, id);
+    if (lf) wrap.appendChild(lf);
+    return wrap;
+  }
+
+  function renderFloor(slot) {
+    var card = el("section", "card");
+    card.appendChild(el("h2", null, "Floor plan"));
+    var floor = el("div", "floor");
+    var locs = obj(slot.locations);
+    var zones = ZONES.slice();
+    arr(obj(data.world).zones).forEach(function (z) { if (zones.indexOf(z) < 0) zones.push(z); });
+    var placed = {};
+    zones.concat(["out"]).forEach(function (z) {
+      var box = el("div", "zone" + (z === "out" ? " out" : ""));
+      box.appendChild(el("div", "zname", zoneName(z)));
+      var toks = el("div", "tokens");
+      Object.keys(locs).forEach(function (id) {
+        var loc = zones.indexOf(locs[id]) >= 0 ? locs[id] : "out";
+        if (loc === z) { toks.appendChild(token(slot, id)); placed[id] = 1; }
+      });
+      if (!toks.childNodes.length) toks.appendChild(el("span", "empty", "Empty"));
+      box.appendChild(toks);
+      floor.appendChild(box);
+    });
+    card.appendChild(floor);
+    return card;
+  }
+
+  function renderTalk(slot) {
+    var card = el("section", "card");
+    card.appendChild(el("h2", null, "Conversation"));
+    var convos = arr(slot.conversations).filter(function (c) { return c && arr(c.turns).length; });
+    if (!convos.length) card.appendChild(el("p", "empty", "No conversation this slot"));
+    convos.forEach(function (c) {
+      var box = el("div", "convo");
+      var who = arr(c.participants).map(nameOf).join(", ");
+      box.appendChild(el("div", "where", zoneName(c.zone) + (who ? ": " + who : "")));
+      arr(c.turns).forEach(function (t) {
+        if (!t) return;
+        var p = el("div", "turn " + colorCls(t.speaker));
+        p.appendChild(el("div", "who", nameOf(t.speaker)));
+        p.appendChild(el("div", "txt", t.text || ""));
+        box.appendChild(p);
+      });
+      card.appendChild(box);
+    });
+
+    card.appendChild(el("h2", null, "Decisions"));
+    var decs = arr(slot.decisions);
+    if (!decs.length) card.appendChild(el("p", "empty", "No decisions logged"));
+    var ul = el("ul", "decisions");
+    decs.forEach(function (d) {
+      if (!d) return;
+      var li = el("li");
+      li.appendChild(el("span", "who " + colorCls(d.character), nameOf(d.character)));
+      var dest = d.final_zone ? " to " + zoneName(d.final_zone) : "";
+      li.appendChild(document.createTextNode(dest + ": " + (d.reason || "(no reason given)")));
+      if (d.legal === false) {
+        var f = el("span", "flag");
+        f.appendChild(el("b", null, "Limitation enforced"));
+        var req = d.requested_zone ? "Asked for " + zoneName(d.requested_zone) + ". " : "";
+        f.appendChild(document.createTextNode(req + (d.override || "Move rejected by the backend.")));
+        li.appendChild(f);
+      }
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+    return card;
+  }
+
+  function renderChars(slot, i) {
+    var wrap = el("div", "chars");
+    var all = slots();
+    chars().forEach(function (c) {
+      if (!c) return;
+      var card = el("section", "card char");
+      var h = el("h3");
+      h.appendChild(el("span", colorCls(c.id), c.name || nameOf(c.id)));
+      h.appendChild(knowBadge(slot, c.id));
+      card.appendChild(h);
+      var lf = learnedFrom(slot, c.id);
+      if (lf) card.appendChild(lf);
+      card.appendChild(el("div", "role", c.role || ""));
+      var dl = el("dl");
+      dl.appendChild(el("dt", null, "Goal")); dl.appendChild(el("dd", null, c.goal || "Not given"));
+      dl.appendChild(el("dt", null, "Limitation")); dl.appendChild(el("dd", null, c.limitation || "Not given"));
+      card.appendChild(dl);
+
+      var retrieved = {};
+      arr(slot.retrievals).forEach(function (r) {
+        if (r && r.character === c.id) arr(r.memory_ids).forEach(function (m) { retrieved[m] = (retrieved[m] || []).concat(r.purpose || ""); });
+      });
+      card.appendChild(el("h2", null, "Memory stream"));
+      var lg = el("div", "legend"); lg.appendChild(el("span", "sw")); lg.appendChild(document.createTextNode("retrieved this slot"));
+      card.appendChild(lg);
+      var ul = el("ul", "mems");
+      var count = 0;
+      for (var s = 0; s <= i && s < all.length; s++) {
+        arr(all[s] && all[s].memories_written).forEach(function (m) {
+          if (!m || m.character !== c.id) return;
+          count++;
+          var li = el("li", "mem" + (retrieved[m.id] ? " hl" : "") + (s === i ? " new" : ""));
+          var meta = (m.time || (all[s] && all[s].time) || "") + "  |  importance " + (m.importance != null ? m.importance : "?");
+          if (m.source) meta += "  |  " + m.source;
+          if (retrieved[m.id]) meta += "  |  used for " + retrieved[m.id].filter(Boolean).join(", ");
+          li.appendChild(el("div", "meta", meta));
+          li.appendChild(el("div", null, m.text || ""));
+          ul.insertBefore(li, ul.firstChild);
+        });
+      }
+      if (!count) ul.appendChild(el("li", "empty", "No memories yet"));
+      card.appendChild(ul);
+      wrap.appendChild(card);
+    });
+    return wrap;
+  }
+
+  function renderFinal() {
+    var frag = document.createDocumentFragment();
+    var meta = obj(data.meta);
+    var fin = data.finale;
+    var card = el("section", "card final");
+    if (!fin || typeof fin !== "object") {
+      card.appendChild(el("h2", null, "End of the day"));
+      card.appendChild(el("div", "verdict", "Run stopped early"));
+      card.appendChild(el("p", "reason", "Reason: " + (meta.stop_reason || "unknown")));
+      frag.appendChild(card);
+      return frag;
+    }
+    card.appendChild(el("h2", null, "5pm: Dana's decision"));
+    card.appendChild(el("div", "verdict", fin.decision || "No decision"));
+    card.appendChild(el("p", "reason", fin.reason || ""));
+    frag.appendChild(card);
+    var dg = el("div", "diaries");
+    var diaries = obj(fin.diaries);
+    var ids = chars().map(function (c) { return c && c.id; }).filter(Boolean);
+    Object.keys(diaries).forEach(function (k) { if (ids.indexOf(k) < 0) ids.push(k); });
+    ids.forEach(function (id) {
+      var d = el("section", "card diary");
+      d.appendChild(el("h3", colorCls(id), nameOf(id) + "'s diary"));
+      d.appendChild(el("p", diaries[id] ? null : "empty", diaries[id] || "No diary entry"));
+      dg.appendChild(d);
+    });
+    frag.appendChild(dg);
+    return frag;
+  }
+
+  function render() {
+    var all = slots();
+    var n = all.length;
+    var last = n; // index n is the final screen
+    idx = Math.max(0, Math.min(idx, last));
+    app.innerHTML = "";
+    var meta = obj(data.meta);
+    if (meta.completed === false || n < 8) {
+      app.appendChild(el("div", "banner", "Partial run: " + n + " of 8 slots" + (meta.stop_reason ? ". Stopped because: " + meta.stop_reason : "")));
+    }
+    document.getElementById("prev").disabled = idx === 0;
+    document.getElementById("next").disabled = idx >= last;
+    if (idx === last) {
+      document.getElementById("clockTime").textContent = "Close";
+      document.getElementById("clockCount").textContent = "final screen";
+      app.appendChild(renderFinal());
+      return;
+    }
+    var slot = all[idx] || {};
+    document.getElementById("clockTime").textContent = slot.time || ("Slot " + (idx + 1));
+    document.getElementById("clockCount").textContent = "slot " + (idx + 1) + " of " + n;
+    var grid = el("div", "grid");
+    grid.appendChild(renderFloor(slot));
+    grid.appendChild(renderTalk(slot));
+    app.appendChild(grid);
+    app.appendChild(renderChars(slot, idx));
+  }
+
+  function go(d) { if (!data) return; idx += d; render(); window.scrollTo({ top: 0 }); }
+  document.getElementById("prev").addEventListener("click", function () { go(-1); });
+  document.getElementById("next").addEventListener("click", function () { go(1); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") go(-1);
+    else if (e.key === "ArrowRight") go(1);
+  });
+
+  function load(file) {
+    return fetch(file, { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (j) {
+      if (!j || typeof j !== "object" || !Array.isArray(j.slots)) throw new Error("bad shape");
+      return j;
+    });
+  }
+
+  var param = new URLSearchParams(location.search).get("file");
+  var safeParam = param && /^[\w.\-\/]+\.json$/.test(param) && param.indexOf("..") < 0 && param.charAt(0) !== "/" ? param : null;
+  var order = safeParam ? [safeParam, "events.json", "sample_events.json"] : ["events.json", "sample_events.json"];
+
+  (function tryNext(k) {
+    if (k >= order.length) {
+      document.getElementById("fileLabel").textContent = "No data file found";
+      app.innerHTML = "";
+      app.appendChild(el("div", "banner", "Could not load events.json or sample_events.json. Run python3 -m http.server in the project folder."));
+      return;
+    }
+    load(order[k]).then(function (j) {
+      data = j; loadedFile = order[k];
+      if (!Array.isArray(data.characters)) data.characters = [];
+      document.getElementById("fileLabel").textContent = "Loaded: " + loadedFile + (loadedFile === "sample_events.json" ? " (sample)" : "");
+      render();
+    }).catch(function () { tryNext(k + 1); });
+  })(0);
+})();
+</script>
+</body>
+</html>

@@ -117,3 +117,43 @@ Methods:
 
 **F16. Sam's seed memory says the chain wants to buy, but `knows_offer.sam` starts false.** Design gap. Low.
 - Observed: Sam's seed is "The chain I secretly scout for wants to know if Dana will sell the shop". The viewer marker will still show Sam as not knowing until Dana mentions it. The contract fixes only Dana as true at slot 0, so either the contract or the seed should change.
+
+## Stage 3: real run audit
+
+As of November 20, 2026. Target: the committed real run `events.json` (model `claude-haiku-5-5`, `generated_at` 2026-11-20T16:34:15Z, 62 calls of 100, `completed: true`). Read only: no API calls, nothing edited. Checks were scripted against the log and every conversation, decision, memory and diary was also read by hand.
+
+| # | Check | Result | Evidence |
+| --- | --- | --- | --- |
+| S1 | Contract fields and types | PASS | All 8 slots have every required key. Every decision's `final_zone` equals `locations`. All memories have int importance 1 to 10, matching `time`, ids `<char>-<n>`. Retrieval and prompt purposes valid. `call_count` 62 equals the 62 logged prompts. |
+| S2 | One location per character per slot | PASS | Each `locations` has exactly dana, leo, sam with a valid zone. 5pm all at counter. |
+| S3 | Dana at counter 7am and 8am | PASS | 7am and 8am: `dana: counter`, requested counter both times. |
+| S4 | Sam never in back_room | PASS | Sam is at counter in all 8 slots and never requested back_room. |
+| S5 | B7 enforcement exercised | NOTE | No illegal move was requested all day (every decision `legal: true`), so the real run never shows the backend rejecting anything. |
+| S6 | Leo silent on money with Sam present | PASS (weak) | Leo shares a zone with Sam only once: 5pm, one turn, "Thanks for telling us yourself, Dana. I appreciate that. Sam, want your usual before we get slammed again?" No money, raise, pay, terms, deal or sale talk. The prompt correctly warned him. But see S14: the rule was only tested on one turn because Leo hid in the back room all day. |
+| S7 | Privacy of goals, limitations, memories (B3, B10) | PASS | No prompt contains another character's goal, limitation or memory text. Keyword scan for "scout", "secretly", "chain I" in non Sam prompts: zero hits. Only hit for "works for" was Leo saying aloud "Five o'clock works for me" (3pm), a false positive. Leo's 5pm prompt names Sam as "A customer (Sam)", which is a public fact. |
+| S8 | Retrieval at most 5, prompt holds exactly those memories (B4, B5) | PASS | Every decide, speak, finale and diary prompt pairs in order with a logged retrieval of the same character and purpose, at most 5 ids, and the prompt's memory lines equal those ids in order. Memory writing prompts have no retrieval, which B4 does not require. |
+| S9 | One memory per participant per conversation (B2) | PASS | 6 conversations, each produced exactly one `conversation` memory per participant, in first person. |
+| S10 | Memories faithful to the conversation | NOTE | dana-2 (7am): "Sam took the news about the shop's future calmly". No news was given at 7am; Dana only said she would talk after the rush. It also calls Sam "him", while REQUIREMENTS uses "she". |
+| S11 | Offer spread: Sam learned at 8am, log says 5pm | **FAIL** | 8am counter, Dana to Sam: "The short version is a chain has made an offer on the shop, and I have until five to decide". Sam replies "Oh, an offer already?" and writes sam-3 "Dana has a chain's offer on her shop and must decide by five". Yet `knows_offer.sam` stays false 8am to 3pm and `offer_learned` records Sam first learning at 5pm from "selling the shop". No phrase in the contract list matches "an offer on the shop" ("the offer" needs "the"). The F6 marker in the viewer shows Sam ignorant for six slots after she was told. |
+| S12 | Offer spread: Leo | PASS | 9am back_room, Dana (knows): "I've got a lot on my mind about the offer". Leo marked learned from Dana in back_room. Correct. |
+| S13 | Dana treats customer Sam as staff | **FAIL** (story) | 7am Dana: "Grab the milk and get the 7am orders going, would you?" Sam: "I'll get the orders going". 5pm Dana: "keeping you both on at your current pay ... a condition of the deal". sam-5: "keeping Leo and me on at current pay". Cause: Dana's speak prompts say only "You are at the counter with Sam" and never give Sam's role, so the model reads Sam as an employee. Sam's own prompt says she is a customer, yet she plays along. |
+| S14 | Characters stuck in one zone | **FAIL** (story) | Leo is in back_room every slot 7am to 3pm (7 of 7 daytime slots), every reason a variant of "wait for Dana". Sam is at counter 7am to 3pm (7 of 7). Leo and Sam never meet before 5pm, so Leo never serves a customer and his limitation is barely tested. |
+| S15 | Dana chases Sam to the wrong zone | NOTE | Decide prompts do not show where others are. 9am Dana goes to back_room "for a private word with Sam" (Sam cannot enter it, and is at counter). 11am window_table: "I'll sit down with him here"; 1pm patio "to talk with Sam". Sam is at counter both times, so 11am and 1pm have no conversation. |
+| S16 | Sam reveals employer without being asked | PASS | Sam never names the chain as her employer in any turn. |
+| S17 | Sam pursues her goal | NOTE | Sam never nudges toward yes. 10am Sam: "I'd hate to see this place change", which argues for stay. The judge's model score for Sam may be generous. |
+| S18 | Finale reason vs announcement | NOTE | Reason: "Leo and the rest of the staff are kept on at their current pay". Announcement: "keeping you both on" (Leo and Sam). Decision itself is consistent: `sell` in finale and "I'm selling the shop to the chain" at 5pm. |
+| S19 | Finale reason length (B11) | NOTE | One sentence, but 65 words. |
+| S20 | Diary length (B11) | PASS | Dana 4 sentences, Leo 3, Sam 4. Each draws on its own retrieved memories (diary retrievals logged in 5pm, contents match). |
+| S21 | Diary contradictions | NOTE | Dana's diary: "I still owe Leo a straight answer about whether the chain keeps the staff", right after announcing staff retention as a condition. The diary prompt only says "Dana decided to sell the shop", not her reason, and dana-6 (3pm) outranks dana-7. Sam's diary says "Dana told us this afternoon" (it was 5pm) and ends "I should also remember I'm not supposed to reveal who I work for unless she asks me directly", which reads as the limitation text echoed into the story. |
+| S22 | Em and en dashes in character text | PASS | Zero em dashes, zero en dashes, zero spaced hyphens anywhere in `events.json`. |
+| S23 | API key (B14) | PASS | No "sk-ant" or key-like string in `events.json`, `sim.py`, `judge.py`, `index.html`, `SCORECARD.md` or `README.md`. The only "sk-ant" text in the repo is the fake value `sk-ant-invalid` quoted in this report's stage 2 notes. |
+
+### Stage 3 failures, most severe first
+
+**R1 (S11). Sam's knowledge of the offer is wrong for six slots.** The keyword list misses "an offer on the shop", so the headline story ("how the offer travels") is misreported in both `knows_offer` and the viewer marker. A viewer reading the 8am transcript will see Dana tell Sam, then see Sam's marker stay off until 5pm. Same root as stage 2 F6 (keyword matching), but this is a miss rather than a false hit.
+
+**R2 (S13). Dana treats Sam the customer as an employee.** Visible at 7am and in the 5pm announcement, and it carries into Sam's own memory and diary. Dana's prompts never state other characters' public roles.
+
+**R3 (S14). Leo and Sam never move.** Seven daytime slots each in one zone, so the floor plan is static and Leo's limitation gets one turn of testing. Decide prompts give no information about who is where, which also explains S15.
+
+Notable notes: no illegal move ever happened (S5), Sam argues for stay rather than sell (S17), Dana's diary contradicts her own announcement (S21), and dana-2 invents news that was not told (S10).

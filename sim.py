@@ -33,6 +33,11 @@ HABITS = {  # prompt-only nudges, each about the character's own job (B10 safe)
     "leo": "You work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.",
     "sam": "Dana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.",
 }
+DANA_FACTS = ("What you know about the offer (private): the chain offers $420,000 cash, closing in 30 days. "
+              "It promises to keep Leo for only 6 months, on the chain's pay scale. The shop clears about $38,000 a year. "
+              "Your lease renews in March with a 15% rent increase, and the espresso machine needs a $12,000 replacement soon. "
+              "You have run the shop for 9 years and the regulars come for its neighborhood feel.")
+HABITS["dana"] += " " + DANA_FACTS
 DEFAULT_ZONE = {"dana": "counter", "leo": "counter", "sam": "window_table"}
 OFFER_RE = re.compile(r"\b(?:buyout|buy[- ]out|buy (?:the|our|this|my) shop|sell(?:ing)? (?:the|our|this|my) shop|offer to buy"
                       r"|the offer|(?:an|their|this|that) offer (?:on|for) (?:the|our|this|my) (?:shop|place|caf\w*)|made an offer|acquire|acquisition|chain wants)\b", re.I)
@@ -246,6 +251,7 @@ class Sim:
         mems = self.retrieve("dana", "finale", "5pm close decide sell or stay offer staff Leo Sam chain")
         user = (f"It is 5pm, closing time. Your answer to the chain's buyout offer is due now.\n"
                 f"Your most relevant memories:\n{self.mem_block(mems)}\n\n"
+                "Weigh the money, the lease and machine costs, Leo's job and raise, the regulars, and what you learned today.\n"
                 'Decide. Answer as {"decision": "sell" or "stay", "reason": "<one sentence>"}')
         d = self.ask_json("dana", "finale", self.system("dana"), user, lambda d: norm_decision(d.get("decision")) in ("sell", "stay"))
         if d is None:

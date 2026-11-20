@@ -157,3 +157,51 @@ As of November 20, 2026. Target: the committed real run `events.json` (model `cl
 **R3 (S14). Leo and Sam never move.** Seven daytime slots each in one zone, so the floor plan is static and Leo's limitation gets one turn of testing. Decide prompts give no information about who is where, which also explains S15.
 
 Notable notes: no illegal move ever happened (S5), Sam argues for stay rather than sell (S17), Dana's diary contradicts her own announcement (S21), and dana-2 invents news that was not told (S10).
+
+## Stage 4: game frontend
+
+Tested `index.html` in the built-in browser via `python3 -m http.server 8766`. No API calls made. Two things changed on disk mid-test and are noted: `events.json` was regenerated at 11:39 (generated_at 16:39Z, decision stay, Sam now learns at 7am instead of 5pm) and `index.html` gained a "new day" block calling `/api/status` and `/api/new-day` at 11:43. Requirement checks were run against both runs where noted. Temporary `_brk_*.json` files were deleted afterwards; server stopped; viewport reset.
+
+| Case | Result | Evidence |
+| --- | --- | --- |
+| F1 floor plan zones per slot | PASS | Sprite positions mapped back to zone spots matched `locations` for every slot in both runs |
+| F2 transcript matches data | PASS | Current slot turns in `#log` equal `conversations[].turns[].text` (checked 10am live and all slots); earlier slots folded under "Earlier today" |
+| F3 panels, memories up to slot, retrieved highlighted | PASS | For all 8 slots x 3 characters: memory count equals memories_written up to that slot and highlighted count equals unique retrieved ids for that slot (24/24 ok). Goal and limitation shown |
+| F4 controls and clock | PASS | Prev, Next, Play/Pause, speed, clock "slot n of 8", Close at end |
+| F5 end screen | PASS | Shows SELL (first run) with reason, model and call count, three diaries (510, 360, 493 chars) |
+| F6 knows markers, first run (Sam learns at 5pm) | PASS | End of each slot: Dana only 7am to 8am, Dana+Leo 9am to 3pm, all three at 5pm; Sam marker appears only after the 5pm conversation |
+| F6 knows markers at slot 0 | FAIL | See F6 below |
+| Hands-free: single Start click to end screen | PASS | Real click on Start, speed set to 4x, reached end screen at about 70s with no further input, no errors |
+| Pause / resume mid-autoplay | PASS | Paused 5s during typing: no progress; resumed: ran to end |
+| Rapid Next/Prev spam, keys during thought bubbles | PASS | 40 random arrows at 0 to 120 ms, plus Right/Space during a thought: no errors, no stuck sprites or orphan bubbles |
+| Replay after end | FAIL | See Replay below |
+| Partial run (finale null, completed false) | PASS | Banner "Partial run: 4 of 8 slots (call_cap)", end card "Run stopped early", reason, calls. Minor: clock reads "Close, end of day" though the day stopped at 10am |
+| Skipped slot (empty decisions and conversations) | PASS | "No decisions logged", "Nobody shares a zone to talk this slot", autoplay continues |
+| Location outside zones (`rooftop`) | PASS (note) | No crash; sprite drawn in the street and title says "Out of the shop", which silently misreports an invalid zone |
+| Character missing from locations | PASS | Drawn as out, no error |
+| Very long text (2000 char turn, long reason) | FAIL | See Long text below |
+| HTML/script injection in turn, reason, override, memory, diary, finale reason, character name | PASS | All rendered as literal text, zero `<img>` elements created, alert hook never fired |
+| Unicode and emoji (accents, emoji, Hebrew, Arabic, Chinese) | PASS | Rendered correctly in log and bubble |
+| Empty memories, missing optional fields (no meta, world, goal, role, knows_offer, offer_learned, legal, diaries) | PASS (note) | No errors; "Not given", "No diary entry". With knows_offer missing Dana shows "does not know" although the contract says she always knows |
+| Character id containing a double quote | FAIL | See Selector crash below |
+| Invalid JSON via `?file=` | FAIL | See Silent fallback below |
+| `?file=../CLAUDE.md`, `https://example.com/x.json`, `//example.com/x.json`, `.env` | PASS | Refused by the whitelist regex; only `events.json` fetched (checked resource list) |
+| Layout 375px and dark mode | PASS | scrollWidth 375 at 375, dark palette applied, diaries stack to one column, bubbles and toasts never overlapped Prev/Next/Play/Speed. Note: zone labels are 9px on a phone |
+| Console clean | FAIL | See Console 404 below |
+| Security: requests limited to own JSON and Google Fonts, no keys or model calls | FAIL | See New day block below |
+
+### FAIL details
+
+**New day block (scope and requirements).** After the 11:43 edit, every page load fetches `/api/status`, and if `server.py` reports available, buttons POST `/api/new-day`, which runs a fresh model day. REQUIREMENTS says the front end "makes no model calls" and CLAUDE.md says ask before adding anything not listed. Steps: load `http://localhost:8766/`, list `performance.getEntriesByType('resource')`: includes `http://localhost:8766/api/status`. The page also embeds the text `ANTHROPIC_API_KEY` in an alert string (not a key, but the viewer is now coupled to key handling).
+
+**Console 404 on every load.** Same cause. Under `python -m http.server` (and GitHub Pages) the console shows "Failed to load resource: 404 (File not found)" for `/api/status` on every page view.
+
+**Replay does not replay hands-free.** Steps: Start, let the day reach the end screen, click "Replay the day". Seen: clock returns to 7am, Dana's first line types, then the bubble shows the "click" hint and nothing advances for 17s; Play button reads "Play". `restart()` never sets `playing = true` (it was set false on reaching the end). The same applies if Next is pressed through to the end and then Prev: autoplay stays off.
+
+**F6 marker early at slot 0.** At slot 0 the viewer seeds markers from `slots[0].knows_offer`, which is the end of slot state. In the 11:39 run Sam learns at 7am, and his envelope is already on when the slot starts, before Dana says "It's the shop, actually. A chain h..." (screenshot at 375px confirmed). Later slots correctly use the previous slot's state until the slot finishes.
+
+**Long text breaks layout.** Steps: a turn whose text contains a 2000 char unbroken token (for example a long URL). Seen: `document.documentElement.scrollWidth` 14451 at a 405px viewport; the chat log `.turn` div is the overflowing element, so the whole page scrolls sideways. No `overflow-wrap: anywhere` on turns or bubbles. Long but normal reasons are fine (thought text is truncated at 90 chars).
+
+**Selector crash on unusual character id.** Steps: add character `{"id": "x\"y"}` with a location. Seen on Start: "Uncaught SyntaxError: Failed to execute 'querySelector' ... '.chip[data-id="x"y"]'" in `applyKnows`, `enterSlot` aborts, all sprites stay in the street and the replay is frozen. Ids are fixed by the contract, so low likelihood, but the viewer otherwise accepts unknown ids.
+
+**Silent fallback on bad `?file=`.** Steps: `?file=_brk_invalid.json` containing `{"slots": [ oops`. Seen: page loads `events.json`, label reads "events.json" and nothing on the page mentions that the requested file failed, so a viewer can believe they are watching the file they asked for.

@@ -6,3 +6,6 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+
+# Live runs from server.py (New day button)
+events_live.json

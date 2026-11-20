@@ -3,7 +3,7 @@
 Run:  .venv/bin/python server.py [--port 8000]   then open http://localhost:8000
 Fake: SIM_FAKE=1 .venv/bin/python server.py      (sim runs in free fake mode)
 """
-import argparse, json, os, subprocess, sys, threading
+import argparse, json, os, subprocess, sys, threading, time
 from urllib.parse import unquote
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -11,6 +11,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = "events_live.json"
 LOCK = threading.Lock()
+SERVE = {"/", "/index.html", "/events.json", "/events_live.json", "/sample_events.json"}
 
 
 def env_file():
@@ -42,10 +43,19 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def blocked(self):
-        parts = unquote(self.path.split("?", 1)[0]).replace("\\", "/").split("/")
-        return any(p.startswith((".env", ".git", ".venv")) for p in parts)
+        # allow list: serve only the files the game needs (macOS paths are case-insensitive, so no block lists)
+        return unquote(self.path.split("?", 1)[0]) not in SERVE
+
+    def bad_origin(self):
+        # only this page may call the API: reject other Host headers (DNS rebinding) and cross-site Origins (CSRF)
+        okhosts = {f"localhost:{self.server.server_port}", f"127.0.0.1:{self.server.server_port}"}
+        origin = self.headers.get("Origin")
+        return (self.headers.get("Host") not in okhosts
+                or (origin is not None and origin.removeprefix("http://") not in okhosts))
 
     def do_GET(self):
+        if self.bad_origin():
+            return self.send_error(403)
         if self.path.split("?", 1)[0] == "/api/status":
             return self.send_json(200, {"available": True, "running": LOCK.locked(), "has_key": has_key()})
         if self.blocked():
@@ -53,16 +63,19 @@ class Handler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_HEAD(self):
-        if self.blocked():
+        if self.bad_origin() or self.blocked():
             return self.send_error(404)
         super().do_HEAD()
 
     def do_POST(self):
         if self.path.split("?", 1)[0] != "/api/new-day":
             return self.send_error(404)
+        if self.bad_origin() or self.headers.get("X-Coffee-Shop") != "new-day":
+            return self.send_error(403)  # custom header forces a CORS preflight, which this server never approves
         if not LOCK.acquire(blocking=False):
             return self.send_json(409, {"ok": False, "file": OUT, "exit_code": None, "summary": "A new day is already running."})
         try:
+            started = time.time() - 1
             env = dict(os.environ)
             key = env_file().get("ANTHROPIC_API_KEY")
             if key and not env.get("ANTHROPIC_API_KEY"):
@@ -71,9 +84,10 @@ class Handler(SimpleHTTPRequestHandler):
                                cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
             lines = [l for l in p.stdout.splitlines() if l.strip()]
             summary = lines[-1].replace(ROOT + os.sep, "") if lines else ("Run failed (exit %d)." % p.returncode)
-            if p.returncode == 1 and not lines:
+            if p.returncode == 1 and not lines and not has_key():
                 summary = "ANTHROPIC_API_KEY is not set. Add it to .env and try again."
-            ok = p.returncode in (0, 2) and os.path.exists(os.path.join(ROOT, OUT))
+            out = os.path.join(ROOT, OUT)
+            ok = p.returncode == 0 and os.path.isfile(out) and os.path.getmtime(out) >= started
             self.send_json(200, {"ok": ok, "file": OUT, "exit_code": p.returncode, "summary": summary})
         finally:
             LOCK.release()

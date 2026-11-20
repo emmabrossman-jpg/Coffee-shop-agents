@@ -9,3 +9,4 @@ venv/
 
 # Live runs from server.py (New day button)
 events_live.json
+*.tmp

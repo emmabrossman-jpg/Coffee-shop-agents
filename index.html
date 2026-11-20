@@ -1185,7 +1185,7 @@
     }, 1000);
     $("busyTime").textContent = "0:00"; $("busy").classList.add("open");
     function done() { clearInterval(tick); $("busy").classList.remove("open"); ["newDayHud", "newDayStart"].forEach(function (id) { $(id).disabled = false; }); }
-    fetch("/api/new-day", { method: "POST" }).then(function (r) { return r.json(); }).then(function (res) {
+    fetch("/api/new-day", { method: "POST", headers: { "X-Coffee-Shop": "new-day" } }).then(function (r) { return r.json(); }).then(function (res) {
       if (res && res.ok) { location.href = "?file=" + encodeURIComponent(res.file) + "&autoplay=1"; return; }
       done(); alert("The new day did not finish: " + ((res && res.summary) || "unknown error"));
     }).catch(function () { done(); alert("The new day did not finish: could not reach server.py."); });

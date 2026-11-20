@@ -40,8 +40,9 @@ DANA_FACTS = ("What you know about the offer (private): the chain offers $420,00
 HABITS["dana"] += " " + DANA_FACTS
 HABITS["leo"] += (" Private: a cafe across town offered you a job paying $2 more an hour, and you must answer them by tomorrow."
                   " You would rather stay here if Dana gives you a raise, so decide how hard to push and whether to mention the other offer.")
-HABITS["sam"] += (" Private: the chain pays you a $5,000 bonus if Dana sells, but you have come here for years and genuinely love the place."
-                  " Decide how hard to push, and how to keep your cover if someone gets suspicious.")
+HABITS["sam"] += (" Private: the chain pays you a $5,000 bonus if Dana sells, and you need that money, so you keep nudging her toward yes."
+                  " You do love the place, but you only let that show in a private moment; never argue for her to stay."
+                  " Keep your cover if someone gets suspicious.")
 HABITS["dana"] += " Decide each hour who you most need to talk to and what you want to learn from them."
 DEFAULT_ZONE = {"dana": "counter", "leo": "counter", "sam": "window_table"}
 OFFER_RE = re.compile(r"\b(?:buyout|buy[- ]out|buy (?:the|our|this|my) shop|sell(?:ing)? (?:the|our|this|my) shop|offer to buy"

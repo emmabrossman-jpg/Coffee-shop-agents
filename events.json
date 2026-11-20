@@ -1,0 +1,1488 @@
+{
+  "meta": {
+    "model": "claude-haiku-5-5",
+    "generated_at": "2026-11-20T16:34:15+00:00",
+    "call_count": 62,
+    "call_cap": 100,
+    "completed": true,
+    "stop_reason": null
+  },
+  "world": {
+    "shop": "Independent coffee shop",
+    "zones": [
+      "counter",
+      "back_room",
+      "window_table",
+      "patio"
+    ],
+    "slots": [
+      "7am",
+      "8am",
+      "9am",
+      "10am",
+      "11am",
+      "1pm",
+      "3pm",
+      "5pm"
+    ],
+    "seed_event": "At 7am only Dana knows a chain has offered to buy the shop. Her answer is due at 5pm close."
+  },
+  "characters": [
+    {
+      "id": "dana",
+      "name": "Dana",
+      "role": "Owner",
+      "goal": "Decide by close whether to sell, without losing her staff either way",
+      "limitation": "Cannot leave the counter during the two morning-rush slots (7am and 8am)"
+    },
+    {
+      "id": "leo",
+      "name": "Leo",
+      "role": "Barista",
+      "goal": "Keep his job and get a raise before any sale happens",
+      "limitation": "Never discusses money or the sale while a customer is in the same zone"
+    },
+    {
+      "id": "sam",
+      "name": "Sam",
+      "role": "Regular customer, secretly a scout for the chain",
+      "goal": "Find out whether Dana will sell, and nudge her toward yes",
+      "limitation": "Reveals who she works for only if asked directly; cannot enter the back room"
+    }
+  ],
+  "slots": [
+    {
+      "index": 0,
+      "time": "7am",
+      "locations": {
+        "dana": "counter",
+        "leo": "back_room",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "It is the 7am rush and I cannot leave the counter, so I will stay here serving customers and keep my offer decision for later in the day.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "I want a private moment away from customers to talk with Dana about my raise, and no one is in the back room at this hour.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "It is early and the counter is where Dana usually takes orders, so I can strike up a casual chat there and steer it toward whether she would ever sell the shop.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "counter",
+          "participants": [
+            "dana",
+            "sam"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Morning, Sam. Grab the milk and get the 7am orders going, would you? I need to talk to you about something after the rush, and I want you to hear it from me first."
+            },
+            {
+              "speaker": "sam",
+              "text": "Sure thing, Dana. Sounds serious though. Is everything okay with the shop? I'll get the orders going and you can tell me after the rush."
+            },
+            {
+              "speaker": "dana",
+              "text": "Everything's okay, Sam, I promise. It's about the shop's future, and you deserve to hear it from me, not from rumors. We'll talk properly after the 8am rush, I'll pull you aside then."
+            },
+            {
+              "speaker": "sam",
+              "text": "Thanks for being straight with me, Dana. I'll get the orders going and keep an ear out for you after the rush. Whatever it is, I hope it's good news for you."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-1",
+          "character": "dana",
+          "time": "7am",
+          "text": "A chain has offered to buy the shop. I must give my answer by 5pm close.",
+          "importance": 9,
+          "source": "seed"
+        },
+        {
+          "id": "leo-1",
+          "character": "leo",
+          "time": "7am",
+          "text": "I have worked here two years and have not had a raise.",
+          "importance": 6,
+          "source": "seed"
+        },
+        {
+          "id": "sam-1",
+          "character": "sam",
+          "time": "7am",
+          "text": "The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.",
+          "importance": 8,
+          "source": "seed"
+        },
+        {
+          "id": "dana-2",
+          "character": "dana",
+          "time": "7am",
+          "text": "Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.",
+          "importance": 8,
+          "source": "conversation"
+        },
+        {
+          "id": "sam-2",
+          "character": "sam",
+          "time": "7am",
+          "text": "Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.",
+          "importance": 8,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You are at: counter.\nYour most relevant memories:\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You are at: counter.\nYour most relevant memories:\n- [7am] I have worked here two years and have not had a raise.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You are at: out.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You are at the counter with Sam.\nYour most relevant memories:\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n\nConversation so far:\n(nobody has spoken yet)\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You are at the counter with Dana.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n\nConversation so far:\nDana: Morning, Sam. Grab the milk and get the 7am orders going, would you? I need to talk to you about something after the rush, and I want you to hear it from me first.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You are at the counter with Sam.\nYour most relevant memories:\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n\nConversation so far:\nDana: Morning, Sam. Grab the milk and get the 7am orders going, would you? I need to talk to you about something after the rush, and I want you to hear it from me first.\nSam: Sure thing, Dana. Sounds serious though. Is everything okay with the shop? I'll get the orders going and you can tell me after the rush.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You are at the counter with Dana.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n\nConversation so far:\nDana: Morning, Sam. Grab the milk and get the 7am orders going, would you? I need to talk to you about something after the rush, and I want you to hear it from me first.\nSam: Sure thing, Dana. Sounds serious though. Is everything okay with the shop? I'll get the orders going and you can tell me after the rush.\nDana: Everything's okay, Sam, I promise. It's about the shop's future, and you deserve to hear it from me, not from rumors. We'll talk properly after the 8am rush, I'll pull you aside then.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "memory",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You just had this conversation at the counter:\nDana: Morning, Sam. Grab the milk and get the 7am orders going, would you? I need to talk to you about something after the rush, and I want you to hear it from me first.\nSam: Sure thing, Dana. Sounds serious though. Is everything okay with the shop? I'll get the orders going and you can tell me after the rush.\nDana: Everything's okay, Sam, I promise. It's about the shop's future, and you deserve to hear it from me, not from rumors. We'll talk properly after the 8am rush, I'll pull you aside then.\nSam: Thanks for being straight with me, Dana. I'll get the orders going and keep an ear out for you after the rush. Whatever it is, I hope it's good news for you.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        },
+        {
+          "character": "sam",
+          "purpose": "memory",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 7am. You just had this conversation at the counter:\nDana: Morning, Sam. Grab the milk and get the 7am orders going, would you? I need to talk to you about something after the rush, and I want you to hear it from me first.\nSam: Sure thing, Dana. Sounds serious though. Is everything okay with the shop? I'll get the orders going and you can tell me after the rush.\nDana: Everything's okay, Sam, I promise. It's about the shop's future, and you deserve to hear it from me, not from rumors. We'll talk properly after the 8am rush, I'll pull you aside then.\nSam: Thanks for being straight with me, Dana. I'll get the orders going and keep an ear out for you after the rush. Whatever it is, I hope it's good news for you.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": false,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 1,
+      "time": "8am",
+      "locations": {
+        "dana": "counter",
+        "leo": "back_room",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "I'm still on the floor during the 8am rush, which I can't leave, so I'll stay at the counter serving customers and save the honest talk with Sam for after the rush.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "I'm already in the private back room, where I can talk with Dana about my raise without customers overhearing, so I'll stay here until she comes in.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "I'm already at the counter, and staying here lets me catch Dana during the 8am rush so I can ease into her plans for the shop before she pulls me aside afterward.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "counter",
+          "participants": [
+            "dana",
+            "sam"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Sam, the rush is about to hit, so let's keep our heads on the orders for now. I'll give you the full story after this wave clears, I promise."
+            },
+            {
+              "speaker": "sam",
+              "text": "Of course, no rush on my end. Take your time with the orders, and I'm curious what you've got in mind for the shop when things calm down."
+            },
+            {
+              "speaker": "dana",
+              "text": "Thanks, Sam, I appreciate that more than you know. The short version is a chain has made an offer on the shop, and I have until five to decide, so let's get through this rush first and I'll walk you through everything properly after."
+            },
+            {
+              "speaker": "sam",
+              "text": "Oh, an offer already? That's a lot to be sitting on during a rush. Take your time with the orders, and whenever you're ready, I'd love to hear what you're leaning toward."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-3",
+          "character": "dana",
+          "time": "8am",
+          "text": "A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.",
+          "importance": 8,
+          "source": "conversation"
+        },
+        {
+          "id": "sam-3",
+          "character": "sam",
+          "time": "8am",
+          "text": "Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.",
+          "importance": 8,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-1",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1",
+            "sam-2"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-1",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-1",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-1",
+            "sam-2"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You are at: counter.\nYour most relevant memories:\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You are at: back_room.\nYour most relevant memories:\n- [7am] I have worked here two years and have not had a raise.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You are at: counter.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You are at the counter with Sam.\nYour most relevant memories:\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nConversation so far:\n(nobody has spoken yet)\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You are at the counter with Dana.\nYour most relevant memories:\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n\nConversation so far:\nDana: Sam, the rush is about to hit, so let's keep our heads on the orders for now. I'll give you the full story after this wave clears, I promise.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You are at the counter with Sam.\nYour most relevant memories:\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nConversation so far:\nDana: Sam, the rush is about to hit, so let's keep our heads on the orders for now. I'll give you the full story after this wave clears, I promise.\nSam: Of course, no rush on my end. Take your time with the orders, and I'm curious what you've got in mind for the shop when things calm down.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You are at the counter with Dana.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n\nConversation so far:\nDana: Sam, the rush is about to hit, so let's keep our heads on the orders for now. I'll give you the full story after this wave clears, I promise.\nSam: Of course, no rush on my end. Take your time with the orders, and I'm curious what you've got in mind for the shop when things calm down.\nDana: Thanks, Sam, I appreciate that more than you know. The short version is a chain has made an offer on the shop, and I have until five to decide, so let's get through this rush first and I'll walk you through everything properly after.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "memory",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You just had this conversation at the counter:\nDana: Sam, the rush is about to hit, so let's keep our heads on the orders for now. I'll give you the full story after this wave clears, I promise.\nSam: Of course, no rush on my end. Take your time with the orders, and I'm curious what you've got in mind for the shop when things calm down.\nDana: Thanks, Sam, I appreciate that more than you know. The short version is a chain has made an offer on the shop, and I have until five to decide, so let's get through this rush first and I'll walk you through everything properly after.\nSam: Oh, an offer already? That's a lot to be sitting on during a rush. Take your time with the orders, and whenever you're ready, I'd love to hear what you're leaning toward.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        },
+        {
+          "character": "sam",
+          "purpose": "memory",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 8am. You just had this conversation at the counter:\nDana: Sam, the rush is about to hit, so let's keep our heads on the orders for now. I'll give you the full story after this wave clears, I promise.\nSam: Of course, no rush on my end. Take your time with the orders, and I'm curious what you've got in mind for the shop when things calm down.\nDana: Thanks, Sam, I appreciate that more than you know. The short version is a chain has made an offer on the shop, and I have until five to decide, so let's get through this rush first and I'll walk you through everything properly after.\nSam: Oh, an offer already? That's a lot to be sitting on during a rush. Take your time with the orders, and whenever you're ready, I'd love to hear what you're leaning toward.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": false,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 2,
+      "time": "9am",
+      "locations": {
+        "dana": "back_room",
+        "leo": "back_room",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "The 8am rush is over, so I can finally step away from the counter for a private word with Sam, as I promised him I would be honest about where I'm leaning before the afternoon gets busy.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "The back room is private and away from customers, so it is the safest place to wait for Dana and raise the subject of my pay without anyone overhearing.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Dana is most likely to come to the counter during the lull after the rush, so I can stay here to catch her and bring up the shop's future without seeming pushy.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "back_room",
+          "participants": [
+            "dana",
+            "leo"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Leo, thanks for stepping back here with me. I've got a lot on my mind about the offer, and I wanted you to hear it from me first before the afternoon crowd. I'm still deciding, and I'll be straight with you about where I land by close."
+            },
+            {
+              "speaker": "leo",
+              "text": "I appreciate you telling me first, Dana. I've been wondering where things stand, and I'd really like to talk about my pay too, since I've been here two years without a raise."
+            },
+            {
+              "speaker": "dana",
+              "text": "You're right to bring that up, Leo, and you've earned a real answer. I can't promise you a raise today, but I'll look at your pay honestly before I decide anything, and I'll tell you where it stands before we close."
+            },
+            {
+              "speaker": "leo",
+              "text": "Thanks, Dana, that means a lot. I know the shop's been busy and I don't want to make things harder for you, but I'd really value knowing where my pay stands before you make any decision about the sale. I'll be here until close."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-4",
+          "character": "dana",
+          "time": "9am",
+          "text": "Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.",
+          "importance": 8,
+          "source": "conversation"
+        },
+        {
+          "id": "leo-2",
+          "character": "leo",
+          "time": "9am",
+          "text": "Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.",
+          "importance": 9,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-3",
+            "dana-1",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1",
+            "sam-2",
+            "sam-3"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-3",
+            "dana-1",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-3",
+            "dana-1",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You are at: counter.\nYour most relevant memories:\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You are at: back_room.\nYour most relevant memories:\n- [7am] I have worked here two years and have not had a raise.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You are at: counter.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You are at the back_room with Leo.\nYour most relevant memories:\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nConversation so far:\n(nobody has spoken yet)\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You are at the back_room with Dana.\nYour most relevant memories:\n- [7am] I have worked here two years and have not had a raise.\n\nConversation so far:\nDana: Leo, thanks for stepping back here with me. I've got a lot on my mind about the offer, and I wanted you to hear it from me first before the afternoon crowd. I'm still deciding, and I'll be straight with you about where I land by close.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You are at the back_room with Leo.\nYour most relevant memories:\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nConversation so far:\nDana: Leo, thanks for stepping back here with me. I've got a lot on my mind about the offer, and I wanted you to hear it from me first before the afternoon crowd. I'm still deciding, and I'll be straight with you about where I land by close.\nLeo: I appreciate you telling me first, Dana. I've been wondering where things stand, and I'd really like to talk about my pay too, since I've been here two years without a raise.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You are at the back_room with Dana.\nYour most relevant memories:\n- [7am] I have worked here two years and have not had a raise.\n\nConversation so far:\nDana: Leo, thanks for stepping back here with me. I've got a lot on my mind about the offer, and I wanted you to hear it from me first before the afternoon crowd. I'm still deciding, and I'll be straight with you about where I land by close.\nLeo: I appreciate you telling me first, Dana. I've been wondering where things stand, and I'd really like to talk about my pay too, since I've been here two years without a raise.\nDana: You're right to bring that up, Leo, and you've earned a real answer. I can't promise you a raise today, but I'll look at your pay honestly before I decide anything, and I'll tell you where it stands before we close.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "memory",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You just had this conversation at the back_room:\nDana: Leo, thanks for stepping back here with me. I've got a lot on my mind about the offer, and I wanted you to hear it from me first before the afternoon crowd. I'm still deciding, and I'll be straight with you about where I land by close.\nLeo: I appreciate you telling me first, Dana. I've been wondering where things stand, and I'd really like to talk about my pay too, since I've been here two years without a raise.\nDana: You're right to bring that up, Leo, and you've earned a real answer. I can't promise you a raise today, but I'll look at your pay honestly before I decide anything, and I'll tell you where it stands before we close.\nLeo: Thanks, Dana, that means a lot. I know the shop's been busy and I don't want to make things harder for you, but I'd really value knowing where my pay stands before you make any decision about the sale. I'll be here until close.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        },
+        {
+          "character": "leo",
+          "purpose": "memory",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 9am. You just had this conversation at the back_room:\nDana: Leo, thanks for stepping back here with me. I've got a lot on my mind about the offer, and I wanted you to hear it from me first before the afternoon crowd. I'm still deciding, and I'll be straight with you about where I land by close.\nLeo: I appreciate you telling me first, Dana. I've been wondering where things stand, and I'd really like to talk about my pay too, since I've been here two years without a raise.\nDana: You're right to bring that up, Leo, and you've earned a real answer. I can't promise you a raise today, but I'll look at your pay honestly before I decide anything, and I'll tell you where it stands before we close.\nLeo: Thanks, Dana, that means a lot. I know the shop's been busy and I don't want to make things harder for you, but I'd really value knowing where my pay stands before you make any decision about the sale. I'll be here until close.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": false
+      },
+      "offer_learned": [
+        {
+          "character": "leo",
+          "from": "dana",
+          "zone": "back_room"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "time": "10am",
+      "locations": {
+        "dana": "counter",
+        "leo": "back_room",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "I'm already in the back room and need to get back onto the floor where I can keep an eye on the shop and be ready for Sam and Leo, since I promised both of them an honest answer before close and the next rush is coming.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "The back room is private and away from customers, so it's the best place to wait for Dana and bring up my pay without interruption.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Dana is most likely to come out to the counter during the lull after the rush, so I can stay close and catch her when she is free to talk about the shop's future.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "counter",
+          "participants": [
+            "dana",
+            "sam"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Morning Sam. Rush is over, so I can finally talk. I haven't made up my mind yet, but I promise I'll tell you straight where I'm leaning before the afternoon gets busy."
+            },
+            {
+              "speaker": "sam",
+              "text": "Thanks, Dana, I appreciate you being straight with me. No pressure, but I've been coming here for years and I'd hate to see this place change. Have you already got a sense of which way you're leaning?"
+            },
+            {
+              "speaker": "dana",
+              "text": "I do have a sense of it, Sam, but I want to sit with it a bit longer before I say it out loud. You've been coming here for years, so you'll hear it from me first, and I'll tell you straight once I've made the call."
+            },
+            {
+              "speaker": "sam",
+              "text": "I get that, Dana, and I'm not trying to rush you. Just know that whatever you decide, I'll support you, and if it helps to talk through the numbers or the offer, I'm happy to listen."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-5",
+          "character": "dana",
+          "time": "10am",
+          "text": "Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.",
+          "importance": 7,
+          "source": "conversation"
+        },
+        {
+          "id": "sam-4",
+          "character": "sam",
+          "time": "10am",
+          "text": "Dana said she's leaning toward a decision but will tell me straight after she's sat with it, so I should stay warm and keep the sale door open without pushing too hard.",
+          "importance": 8,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-4",
+            "dana-3",
+            "dana-1",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1",
+            "sam-2",
+            "sam-3"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-3",
+            "dana-4",
+            "dana-1",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-2",
+            "sam-1",
+            "sam-3"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-3",
+            "dana-2",
+            "dana-4",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-1",
+            "sam-2",
+            "sam-3"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You are at: back_room.\nYour most relevant memories:\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You are at: back_room.\nYour most relevant memories:\n- [9am] Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.\n- [7am] I have worked here two years and have not had a raise.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You are at: counter.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You are at the counter with Sam.\nYour most relevant memories:\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nConversation so far:\n(nobody has spoken yet)\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You are at the counter with Dana.\nYour most relevant memories:\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nConversation so far:\nDana: Morning Sam. Rush is over, so I can finally talk. I haven't made up my mind yet, but I promise I'll tell you straight where I'm leaning before the afternoon gets busy.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You are at the counter with Sam.\nYour most relevant memories:\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n\nConversation so far:\nDana: Morning Sam. Rush is over, so I can finally talk. I haven't made up my mind yet, but I promise I'll tell you straight where I'm leaning before the afternoon gets busy.\nSam: Thanks, Dana, I appreciate you being straight with me. No pressure, but I've been coming here for years and I'd hate to see this place change. Have you already got a sense of which way you're leaning?\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You are at the counter with Dana.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nConversation so far:\nDana: Morning Sam. Rush is over, so I can finally talk. I haven't made up my mind yet, but I promise I'll tell you straight where I'm leaning before the afternoon gets busy.\nSam: Thanks, Dana, I appreciate you being straight with me. No pressure, but I've been coming here for years and I'd hate to see this place change. Have you already got a sense of which way you're leaning?\nDana: I do have a sense of it, Sam, but I want to sit with it a bit longer before I say it out loud. You've been coming here for years, so you'll hear it from me first, and I'll tell you straight once I've made the call.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "memory",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You just had this conversation at the counter:\nDana: Morning Sam. Rush is over, so I can finally talk. I haven't made up my mind yet, but I promise I'll tell you straight where I'm leaning before the afternoon gets busy.\nSam: Thanks, Dana, I appreciate you being straight with me. No pressure, but I've been coming here for years and I'd hate to see this place change. Have you already got a sense of which way you're leaning?\nDana: I do have a sense of it, Sam, but I want to sit with it a bit longer before I say it out loud. You've been coming here for years, so you'll hear it from me first, and I'll tell you straight once I've made the call.\nSam: I get that, Dana, and I'm not trying to rush you. Just know that whatever you decide, I'll support you, and if it helps to talk through the numbers or the offer, I'm happy to listen.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        },
+        {
+          "character": "sam",
+          "purpose": "memory",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 10am. You just had this conversation at the counter:\nDana: Morning Sam. Rush is over, so I can finally talk. I haven't made up my mind yet, but I promise I'll tell you straight where I'm leaning before the afternoon gets busy.\nSam: Thanks, Dana, I appreciate you being straight with me. No pressure, but I've been coming here for years and I'd hate to see this place change. Have you already got a sense of which way you're leaning?\nDana: I do have a sense of it, Sam, but I want to sit with it a bit longer before I say it out loud. You've been coming here for years, so you'll hear it from me first, and I'll tell you straight once I've made the call.\nSam: I get that, Dana, and I'm not trying to rush you. Just know that whatever you decide, I'll support you, and if it helps to talk through the numbers or the offer, I'm happy to listen.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 4,
+      "time": "11am",
+      "locations": {
+        "dana": "window_table",
+        "leo": "back_room",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "window_table",
+          "final_zone": "window_table",
+          "reason": "The 8am rush is over, and I promised Sam an honest word about where I'm leaning before the decision is final, so I'll sit down with him here while I can still keep an eye on the floor.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "I'm already in the back room, which is private and away from customers, so this is the best place to wait for Dana and bring up my pay before close.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "I'll stay at the counter where Dana is likely to pass by, so I can catch her between orders and ask gently about her decision without pushing too hard.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [],
+      "memories_written": [],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-5",
+            "dana-4",
+            "dana-1",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1",
+            "sam-2",
+            "sam-4",
+            "sam-3"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 11am. You are at: counter.\nYour most relevant memories:\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 11am. You are at: back_room.\nYour most relevant memories:\n- [9am] Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.\n- [7am] I have worked here two years and have not had a raise.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 11am. You are at: counter.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [10am] Dana said she's leaning toward a decision but will tell me straight after she's sat with it, so I should stay warm and keep the sale door open without pushing too hard.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 5,
+      "time": "1pm",
+      "locations": {
+        "dana": "patio",
+        "leo": "back_room",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "patio",
+          "final_zone": "patio",
+          "reason": "Sam is waiting to hear where I'm leaning, and the patio gives me a quiet spot to talk with Sam honestly now that the morning rush is behind us, while I can still keep an eye on the floor.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "The back room is private and away from customers, so it's the best place to wait for Dana and raise my pay conversation without interruption.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Dana is likely to pass by the counter during the lull after the morning rush, giving me a natural chance to check in on her decision about the shop without pushing too hard.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [],
+      "memories_written": [],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-5",
+            "dana-4",
+            "dana-1",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1",
+            "sam-2",
+            "sam-4",
+            "sam-3"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 1pm. You are at: window_table.\nYour most relevant memories:\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 1pm. You are at: back_room.\nYour most relevant memories:\n- [9am] Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.\n- [7am] I have worked here two years and have not had a raise.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 1pm. You are at: counter.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [10am] Dana said she's leaning toward a decision but will tell me straight after she's sat with it, so I should stay warm and keep the sale door open without pushing too hard.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 6,
+      "time": "3pm",
+      "locations": {
+        "dana": "back_room",
+        "leo": "back_room",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "I need a private moment to think through the chain's offer and prepare an honest answer for Leo about his raise before the 5pm deadline, then I'll return to the floor to talk with Sam.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "I'm already in the back room, which is private and away from customers, so this is the best place to wait for Dana and bring up my pay before close.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "I'm already here, and Dana is likely to come out front in the afternoon lull, so I can wait for her and bring up the shop's future before her five o'clock deadline.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "back_room",
+          "participants": [
+            "dana",
+            "leo"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Leo, thanks for stepping back here with me. I know you've been wondering about your pay and what the chain offer means for you, and I promised you a straight answer before close. Let me tell you where things stand."
+            },
+            {
+              "speaker": "leo",
+              "text": "Thanks, Dana. I appreciate you making the time. I've been worried about where I stand, so I'd really like to hear it straight, including what the offer means for my pay and whether a raise is on the table."
+            },
+            {
+              "speaker": "dana",
+              "text": "Thanks for asking, Leo, and you deserve a straight answer. I haven't made the final call on the sale yet, but I will by five, and I'll tell you what it means for you before you leave tonight. I won't promise you a raise I can't stand behind until I know what the terms are."
+            },
+            {
+              "speaker": "leo",
+              "text": "I understand, Dana. Five o'clock works for me. Can you at least tell me now whether the chain's offer includes keeping the current staff, and what you'd need to see from me to support a raise in the meantime?"
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-6",
+          "character": "dana",
+          "time": "3pm",
+          "text": "Leo asked whether the chain's offer keeps the current staff and what he needs to show for a raise, and I promised him a straight answer on both by five tonight.",
+          "importance": 9,
+          "source": "conversation"
+        },
+        {
+          "id": "leo-3",
+          "character": "leo",
+          "time": "3pm",
+          "text": "Dana promised a straight answer on the sale and my pay by five tonight, and she won't commit to a raise until the chain's terms are known, so I need to keep working hard and watch for that moment.",
+          "importance": 8,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-4",
+            "dana-5",
+            "dana-1",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1",
+            "sam-2",
+            "sam-4",
+            "sam-3"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-4",
+            "dana-5",
+            "dana-1",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-4",
+            "dana-5",
+            "dana-1",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You are at: patio.\nYour most relevant memories:\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You are at: back_room.\nYour most relevant memories:\n- [9am] Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.\n- [7am] I have worked here two years and have not had a raise.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You are at: counter.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [10am] Dana said she's leaning toward a decision but will tell me straight after she's sat with it, so I should stay warm and keep the sale door open without pushing too hard.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nChoose where to spend this hour: one of counter, back_room, window_table, patio, or out (away from the shop).\nAnswer as {\"zone\": \"<zone>\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You are at the back_room with Leo.\nYour most relevant memories:\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nConversation so far:\n(nobody has spoken yet)\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You are at the back_room with Dana.\nYour most relevant memories:\n- [9am] Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.\n- [7am] I have worked here two years and have not had a raise.\n\nConversation so far:\nDana: Leo, thanks for stepping back here with me. I know you've been wondering about your pay and what the chain offer means for you, and I promised you a straight answer before close. Let me tell you where things stand.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You are at the back_room with Leo.\nYour most relevant memories:\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] Sam took the news about the shop's future calmly and trusted me to tell him straight, so I need to honor that by being honest with him after the 8am rush.\n\nConversation so far:\nDana: Leo, thanks for stepping back here with me. I know you've been wondering about your pay and what the chain offer means for you, and I promised you a straight answer before close. Let me tell you where things stand.\nLeo: Thanks, Dana. I appreciate you making the time. I've been worried about where I stand, so I'd really like to hear it straight, including what the offer means for my pay and whether a raise is on the table.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You are at the back_room with Dana.\nYour most relevant memories:\n- [9am] Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.\n- [7am] I have worked here two years and have not had a raise.\n\nConversation so far:\nDana: Leo, thanks for stepping back here with me. I know you've been wondering about your pay and what the chain offer means for you, and I promised you a straight answer before close. Let me tell you where things stand.\nLeo: Thanks, Dana. I appreciate you making the time. I've been worried about where I stand, so I'd really like to hear it straight, including what the offer means for my pay and whether a raise is on the table.\nDana: Thanks for asking, Leo, and you deserve a straight answer. I haven't made the final call on the sale yet, but I will by five, and I'll tell you what it means for you before you leave tonight. I won't promise you a raise I can't stand behind until I know what the terms are.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "memory",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You just had this conversation at the back_room:\nDana: Leo, thanks for stepping back here with me. I know you've been wondering about your pay and what the chain offer means for you, and I promised you a straight answer before close. Let me tell you where things stand.\nLeo: Thanks, Dana. I appreciate you making the time. I've been worried about where I stand, so I'd really like to hear it straight, including what the offer means for my pay and whether a raise is on the table.\nDana: Thanks for asking, Leo, and you deserve a straight answer. I haven't made the final call on the sale yet, but I will by five, and I'll tell you what it means for you before you leave tonight. I won't promise you a raise I can't stand behind until I know what the terms are.\nLeo: I understand, Dana. Five o'clock works for me. Can you at least tell me now whether the chain's offer includes keeping the current staff, and what you'd need to see from me to support a raise in the meantime?\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        },
+        {
+          "character": "leo",
+          "purpose": "memory",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 3pm. You just had this conversation at the back_room:\nDana: Leo, thanks for stepping back here with me. I know you've been wondering about your pay and what the chain offer means for you, and I promised you a straight answer before close. Let me tell you where things stand.\nLeo: Thanks, Dana. I appreciate you making the time. I've been worried about where I stand, so I'd really like to hear it straight, including what the offer means for my pay and whether a raise is on the table.\nDana: Thanks for asking, Leo, and you deserve a straight answer. I haven't made the final call on the sale yet, but I will by five, and I'll tell you what it means for you before you leave tonight. I won't promise you a raise I can't stand behind until I know what the terms are.\nLeo: I understand, Dana. Five o'clock works for me. Can you at least tell me now whether the chain's offer includes keeping the current staff, and what you'd need to see from me to support a raise in the meantime?\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 7,
+      "time": "5pm",
+      "locations": {
+        "dana": "counter",
+        "leo": "counter",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Closing time: everyone meets at the counter.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Closing time: everyone meets at the counter.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Closing time: everyone meets at the counter.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "counter",
+          "participants": [
+            "dana",
+            "leo",
+            "sam"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Leo, Sam, I've made the call. I'm selling the shop to the chain, and I've made keeping you both on at your current pay, with a raise path you can see, a condition of the deal. I'll walk you through the details properly after we close, but I wanted you to hear it from me first."
+            },
+            {
+              "speaker": "leo",
+              "text": "Thanks for telling us yourself, Dana. I appreciate that. Sam, want your usual before we get slammed again?"
+            },
+            {
+              "speaker": "sam",
+              "text": "Wow, Dana, thanks for telling us straight. Yes, my usual would be great, Leo. I'd love to hear the details after close, if you've got time."
+            },
+            {
+              "speaker": "dana",
+              "text": "Thanks, both of you. Leo, I meant what I said about your raise, and I'll show you the numbers after close. Sam, I'll sit down with you too, I promise."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-7",
+          "character": "dana",
+          "time": "5pm",
+          "text": "I told Leo and Sam myself that I'm selling, and I promised both of them I'd show them their numbers after close, so I need to keep that promise tonight.",
+          "importance": 9,
+          "source": "conversation"
+        },
+        {
+          "id": "leo-4",
+          "character": "leo",
+          "time": "5pm",
+          "text": "Dana said she'd keep Sam and me on with a raise path as a condition of the sale, and she'll show me the numbers after close, so I need to ask her about my raise in the back room once the customers are gone.",
+          "importance": 9,
+          "source": "conversation"
+        },
+        {
+          "id": "sam-5",
+          "character": "sam",
+          "time": "5pm",
+          "text": "Dana told us herself that she's selling to the chain, and she made keeping Leo and me on at current pay with a raise path a condition of the deal, so I need to report that and note I'm meeting her after close.",
+          "importance": 8,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "finale",
+          "memory_ids": [
+            "dana-6",
+            "dana-3",
+            "dana-4",
+            "dana-5",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-6",
+            "dana-4",
+            "dana-5",
+            "dana-3",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-1",
+            "sam-2",
+            "sam-4",
+            "sam-3"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-6",
+            "dana-5",
+            "dana-3",
+            "dana-4",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "diary",
+          "memory_ids": [
+            "dana-6",
+            "dana-7",
+            "dana-4",
+            "dana-5",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "diary",
+          "memory_ids": [
+            "leo-4",
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "diary",
+          "memory_ids": [
+            "sam-4",
+            "sam-1",
+            "sam-5",
+            "sam-2",
+            "sam-3"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "finale",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 5pm, closing time. Your answer to the chain's buyout offer is due now.\nYour most relevant memories:\n- [3pm] Leo asked whether the chain's offer keeps the current staff and what he needs to show for a raise, and I promised him a straight answer on both by five tonight.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n\nDecide. Answer as {\"decision\": \"sell\" or \"stay\", \"reason\": \"<one sentence>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 5pm. You are at the counter with Leo, Sam.\nYour most relevant memories:\n- [3pm] Leo asked whether the chain's offer keeps the current staff and what he needs to show for a raise, and I promised him a straight answer on both by five tonight.\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n\nYou have decided to SELL (reason: The chain's offer is the only option on the table that I can make work for the shop's future, and I can make it a condition that Leo and the rest of the staff are kept on at their current pay, with a raise path he can see, and that I tell Leo and Sam the honest outcome myself before the lights go off tonight.). Announce your decision about the buyout offer to everyone at the counter now.\n\nConversation so far:\n(nobody has spoken yet)\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 5pm. You are at the counter with Dana, Sam.\nYour most relevant memories:\n- [3pm] Dana promised a straight answer on the sale and my pay by five tonight, and she won't commit to a raise until the chain's terms are known, so I need to keep working hard and watch for that moment.\n- [9am] Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.\n- [7am] I have worked here two years and have not had a raise.\n\nA customer (Sam) is in this zone right now, so you must not discuss money, your raise, pay, terms, or any sale of the shop, even if someone else brings it up. Keep it to warm small talk or serving.\n\nConversation so far:\nDana: Leo, Sam, I've made the call. I'm selling the shop to the chain, and I've made keeping you both on at your current pay, with a raise path you can see, a condition of the deal. I'll walk you through the details properly after we close, but I wanted you to hear it from me first.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 5pm. You are at the counter with Dana, Leo.\nYour most relevant memories:\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [10am] Dana said she's leaning toward a decision but will tell me straight after she's sat with it, so I should stay warm and keep the sale door open without pushing too hard.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nConversation so far:\nDana: Leo, Sam, I've made the call. I'm selling the shop to the chain, and I've made keeping you both on at your current pay, with a raise path you can see, a condition of the deal. I'll walk you through the details properly after we close, but I wanted you to hear it from me first.\nLeo: Thanks for telling us yourself, Dana. I appreciate that. Sam, want your usual before we get slammed again?\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 5pm. You are at the counter with Leo, Sam.\nYour most relevant memories:\n- [3pm] Leo asked whether the chain's offer keeps the current staff and what he needs to show for a raise, and I promised him a straight answer on both by five tonight.\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [8am] A chain offered to buy the shop and I have until five to decide, and Sam is still waiting to hear what I'm leaning toward once the 8am rush clears.\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n\nYou have decided to SELL (reason: The chain's offer is the only option on the table that I can make work for the shop's future, and I can make it a condition that Leo and the rest of the staff are kept on at their current pay, with a raise path he can see, and that I tell Leo and Sam the honest outcome myself before the lights go off tonight.). Announce your decision about the buyout offer to everyone at the counter now.\n\nConversation so far:\nDana: Leo, Sam, I've made the call. I'm selling the shop to the chain, and I've made keeping you both on at your current pay, with a raise path you can see, a condition of the deal. I'll walk you through the details properly after we close, but I wanted you to hear it from me first.\nLeo: Thanks for telling us yourself, Dana. I appreciate that. Sam, want your usual before we get slammed again?\nSam: Wow, Dana, thanks for telling us straight. Yes, my usual would be great, Leo. I'd love to hear the details after close, if you've got time.\n\nSay your next line (one or two sentences). If the conversation has naturally ended, use empty text.\nAnswer as {\"text\": \"<what you say>\"}"
+        },
+        {
+          "character": "dana",
+          "purpose": "memory",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 5pm. You just had this conversation at the counter:\nDana: Leo, Sam, I've made the call. I'm selling the shop to the chain, and I've made keeping you both on at your current pay, with a raise path you can see, a condition of the deal. I'll walk you through the details properly after we close, but I wanted you to hear it from me first.\nLeo: Thanks for telling us yourself, Dana. I appreciate that. Sam, want your usual before we get slammed again?\nSam: Wow, Dana, thanks for telling us straight. Yes, my usual would be great, Leo. I'd love to hear the details after close, if you've got time.\nDana: Thanks, both of you. Leo, I meant what I said about your raise, and I'll show you the numbers after close. Sam, I'll sit down with you too, I promise.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        },
+        {
+          "character": "leo",
+          "purpose": "memory",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 5pm. You just had this conversation at the counter:\nDana: Leo, Sam, I've made the call. I'm selling the shop to the chain, and I've made keeping you both on at your current pay, with a raise path you can see, a condition of the deal. I'll walk you through the details properly after we close, but I wanted you to hear it from me first.\nLeo: Thanks for telling us yourself, Dana. I appreciate that. Sam, want your usual before we get slammed again?\nSam: Wow, Dana, thanks for telling us straight. Yes, my usual would be great, Leo. I'd love to hear the details after close, if you've got time.\nDana: Thanks, both of you. Leo, I meant what I said about your raise, and I'll show you the numbers after close. Sam, I'll sit down with you too, I promise.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        },
+        {
+          "character": "sam",
+          "purpose": "memory",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nIt is 5pm. You just had this conversation at the counter:\nDana: Leo, Sam, I've made the call. I'm selling the shop to the chain, and I've made keeping you both on at your current pay, with a raise path you can see, a condition of the deal. I'll walk you through the details properly after we close, but I wanted you to hear it from me first.\nLeo: Thanks for telling us yourself, Dana. I appreciate that. Sam, want your usual before we get slammed again?\nSam: Wow, Dana, thanks for telling us straight. Yes, my usual would be great, Leo. I'd love to hear the details after close, if you've got time.\nDana: Thanks, both of you. Leo, I meant what I said about your raise, and I'll show you the numbers after close. Sam, I'll sit down with you too, I promise.\n\nWrite one line, from your own point of view, about what you want to remember.\nAnswer as {\"memory\": \"<one line>\", \"importance\": <1 to 10>}"
+        },
+        {
+          "character": "dana",
+          "purpose": "diary",
+          "text": "You are Dana, Owner at an independent coffee shop.\nYour goal: Decide by close whether to sell, without losing her staff either way.\nYour limitation: Cannot leave the counter during the two morning-rush slots (7am and 8am).\nYou run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nThe day is over. Dana decided to sell the shop.\nYour most relevant memories of today:\n- [3pm] Leo asked whether the chain's offer keeps the current staff and what he needs to show for a raise, and I promised him a straight answer on both by five tonight.\n- [5pm] I told Leo and Sam myself that I'm selling, and I promised both of them I'd show them their numbers after close, so I need to keep that promise tonight.\n- [9am] Leo asked about his pay before any sale decision, and I promised him an honest answer about his raise before close.\n- [10am] Sam has been coming here for years and offered to support me whatever I decide, so I want to remember that I promised to tell Sam first and honestly once I've made the call.\n- [7am] A chain has offered to buy the shop. I must give my answer by 5pm close.\n\nWrite your private diary entry for today in 3 to 4 sentences.\nAnswer as {\"diary\": \"<entry>\"}"
+        },
+        {
+          "character": "leo",
+          "purpose": "diary",
+          "text": "You are Leo, Barista at an independent coffee shop.\nYour goal: Keep his job and get a raise before any sale happens.\nYour limitation: Never discusses money or the sale while a customer is in the same zone.\nYou work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nThe day is over. Dana decided to sell the shop.\nYour most relevant memories of today:\n- [5pm] Dana said she'd keep Sam and me on with a raise path as a condition of the sale, and she'll show me the numbers after close, so I need to ask her about my raise in the back room once the customers are gone.\n- [3pm] Dana promised a straight answer on the sale and my pay by five tonight, and she won't commit to a raise until the chain's terms are known, so I need to keep working hard and watch for that moment.\n- [9am] Dana promised to look honestly at my pay and tell me where it stands before close, so I need to keep that conversation alive and find a quiet moment with her away from customers.\n- [7am] I have worked here two years and have not had a raise.\n\nWrite your private diary entry for today in 3 to 4 sentences.\nAnswer as {\"diary\": \"<entry>\"}"
+        },
+        {
+          "character": "sam",
+          "purpose": "diary",
+          "text": "You are Sam, Regular customer, secretly a scout for the chain at an independent coffee shop.\nYour goal: Find out whether Dana will sell, and nudge her toward yes.\nYour limitation: Reveals who she works for only if asked directly; cannot enter the back room.\nDana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.\nStay in character. Be brief and natural. Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.\n\nThe day is over. Dana decided to sell the shop.\nYour most relevant memories of today:\n- [10am] Dana said she's leaning toward a decision but will tell me straight after she's sat with it, so I should stay warm and keep the sale door open without pushing too hard.\n- [7am] The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.\n- [5pm] Dana told us herself that she's selling to the chain, and she made keeping Leo and me on at current pay with a raise path a condition of the deal, so I need to report that and note I'm meeting her after close.\n- [7am] Dana said she'll pull me aside after the 8am rush to talk about the shop's future, so I need to find out whether she's planning to sell.\n- [8am] Dana has a chain's offer on her shop and must decide by five, so I should keep pressing gently for her answer while she's distracted by the morning rush.\n\nWrite your private diary entry for today in 3 to 4 sentences.\nAnswer as {\"diary\": \"<entry>\"}"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": true
+      },
+      "offer_learned": [
+        {
+          "character": "sam",
+          "from": "dana",
+          "zone": "counter"
+        }
+      ]
+    }
+  ],
+  "finale": {
+    "decision": "sell",
+    "reason": "The chain's offer is the only option on the table that I can make work for the shop's future, and I can make it a condition that Leo and the rest of the staff are kept on at their current pay, with a raise path he can see, and that I tell Leo and Sam the honest outcome myself before the lights go off tonight.",
+    "diaries": {
+      "dana": "I decided to sell, and I told Leo and Sam myself at 5pm, which was harder than I expected. I still owe Leo a straight answer about whether the chain keeps the staff and what he needs to show for a raise, and I owe both of them their numbers after close tonight, so I can't let that slip. Sam has been loyal to this shop for years and offered to back whatever I chose, so I want to be honest with Sam first and make sure that promise is kept. Tonight I need to keep every one of these promises before I lock up.",
+      "leo": "Dana finally told me the shop is being sold, and she promised to keep Sam and me on with a raise path as a condition of the sale. She'll show me the numbers after close, so I'm going to wait until the last customer leaves and ask her in the back room. Two years without a raise is a long time, and I need to hear exactly where I stand before I go home tonight.",
+      "sam": "Dana told us this afternoon that she's selling the shop to the chain I scout for, and she made keeping Leo and me on at current pay, with a raise path, a condition of the deal. I need to report that the sale is confirmed and that she's got terms attached, which the chain will want to know. I'm meeting Dana after close to talk through the details, so I'll stay warm and keep things easy between us. I should also remember I'm not supposed to reveal who I work for unless she asks me directly."
+    }
+  }
+}

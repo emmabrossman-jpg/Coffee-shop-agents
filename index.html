@@ -203,7 +203,7 @@
   .log { max-height: 440px; overflow-y: auto; padding-right: 4px; }
   .convo { margin-bottom: 10px; }
   .where { font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
-  .turn { margin: 0 0 6px; padding: 6px 9px; border-radius: 10px; background: var(--surface-2); border-left: 4px solid var(--me); font-size: 14px; transition: opacity 0.3s, background 0.3s; }
+  .turn { margin: 0 0 6px; padding: 6px 9px; border-radius: 10px; background: var(--surface-2); border-left: 4px solid var(--me); font-size: 14px; overflow-wrap: anywhere; transition: opacity 0.3s, background 0.3s; }
   .turn .who { font-weight: 700; font-size: 12px; color: var(--me); }
   .turn.upcoming { opacity: 0.38; }
   .turn.current { background: var(--hl-bg); }
@@ -679,6 +679,8 @@
     hideEnd();
     var s = slots[i];
     shownKnows = Object.assign({}, i === 0 ? obj(s.knows_offer) : obj(slots[i - 1].knows_offer));
+    // at 7am, hide anyone who first learns during this slot until the talk reveals it
+    if (i === 0) arr(s.offer_learned).forEach(function (o) { if (o && o.character) shownKnows[o.character] = false; });
     beats = flatten(s);
     updateHud(); renderLog(); renderLogState(); renderMoves(s); renderPanel(); applyKnows(); setTitles(s);
     $("tint").style.opacity = String(N > 1 ? (i / (N - 1)) * 0.22 : 0);
@@ -811,6 +813,7 @@
     updateHud();
   }
   function restart() {
+    playing = true; // Replay plays the whole day hands-free again
     chars.forEach(function (c) { var o = spotFor(c.id, "out"); place(c.id, o[0], o[1]); setZone(c.id, "out"); });
     enterSlot(0, true);
   }

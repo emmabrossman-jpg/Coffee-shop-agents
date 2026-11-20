@@ -1,0 +1,1447 @@
+{
+  "meta": {
+    "model": "claude-haiku-5-5",
+    "generated_at": "2026-11-20T12:00:00Z",
+    "call_count": 0,
+    "call_cap": 100,
+    "completed": true,
+    "stop_reason": null
+  },
+  "world": {
+    "shop": "Independent coffee shop",
+    "zones": [
+      "counter",
+      "back_room",
+      "window_table",
+      "patio"
+    ],
+    "slots": [
+      "7am",
+      "8am",
+      "9am",
+      "10am",
+      "11am",
+      "1pm",
+      "3pm",
+      "5pm"
+    ],
+    "seed_event": "At 7am only Dana knows a chain has offered to buy the shop. Her answer is due at 5pm close."
+  },
+  "characters": [
+    {
+      "id": "dana",
+      "name": "Dana",
+      "role": "Owner",
+      "goal": "Decide by close whether to sell, without losing her staff either way",
+      "limitation": "Cannot leave the counter during the two morning-rush slots (7am and 8am)"
+    },
+    {
+      "id": "leo",
+      "name": "Leo",
+      "role": "Barista",
+      "goal": "Keep his job and get a raise before any sale happens",
+      "limitation": "Never discusses money or the sale while a customer is in the same zone"
+    },
+    {
+      "id": "sam",
+      "name": "Sam",
+      "role": "Regular customer, secretly a scout for the chain",
+      "goal": "Find out whether Dana will sell, and nudge her toward yes",
+      "limitation": "Reveals who she works for only if asked directly; cannot enter the back room"
+    }
+  ],
+  "slots": [
+    {
+      "index": 0,
+      "time": "7am",
+      "locations": {
+        "dana": "counter",
+        "leo": "counter",
+        "sam": "out"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Morning rush; I have to stay at the counter.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Opening shift, the line is already forming.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "out",
+          "final_zone": "out",
+          "reason": "I will come in once the rush dies down.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "counter",
+          "participants": [
+            "dana",
+            "leo"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Busy one today. Can you handle the espresso bar?"
+            },
+            {
+              "speaker": "leo",
+              "text": "Sure. You seem distracted, everything okay?"
+            },
+            {
+              "speaker": "dana",
+              "text": "Just a lot on my mind. Let's get through the rush."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-1",
+          "character": "dana",
+          "time": "7am",
+          "text": "A chain sent a buyout offer for the shop. I must answer by 5pm close.",
+          "importance": 9,
+          "source": "seed"
+        },
+        {
+          "id": "leo-1",
+          "character": "leo",
+          "time": "7am",
+          "text": "I have worked here two years and have not had a raise.",
+          "importance": 6,
+          "source": "seed"
+        },
+        {
+          "id": "sam-1",
+          "character": "sam",
+          "time": "7am",
+          "text": "The chain wants to know if Dana will sell. I am here as a regular to find out.",
+          "importance": 8,
+          "source": "seed"
+        },
+        {
+          "id": "dana-2",
+          "character": "dana",
+          "time": "7am",
+          "text": "Leo noticed I was distracted. I did not tell him about the offer yet.",
+          "importance": 5,
+          "source": "conversation"
+        },
+        {
+          "id": "leo-2",
+          "character": "leo",
+          "time": "7am",
+          "text": "Dana seems distracted this morning and would not say why.",
+          "importance": 5,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-2",
+            "dana-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for dana at 7am"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for leo at 7am"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for sam at 7am"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 7am"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 7am"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 7am"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": false,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 1,
+      "time": "8am",
+      "locations": {
+        "dana": "counter",
+        "leo": "counter",
+        "sam": "window_table"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Still the rush; I cannot leave the counter.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Keep the line moving.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "window_table",
+          "final_zone": "window_table",
+          "reason": "Sit where I can watch Dana.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [],
+      "memories_written": [],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for dana at 8am"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for leo at 8am"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for sam at 8am"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": false,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 2,
+      "time": "9am",
+      "locations": {
+        "dana": "back_room",
+        "leo": "back_room",
+        "sam": "window_table"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "Rush is over. I need to tell Leo privately.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "Dana asked to talk in the back.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "back_room",
+          "final_zone": "window_table",
+          "reason": "Follow Dana and listen in.",
+          "legal": false,
+          "override": "Sam cannot enter the back room; kept at window_table"
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "back_room",
+          "participants": [
+            "dana",
+            "leo"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Leo, a chain made an offer to buy the shop. I have until close to answer."
+            },
+            {
+              "speaker": "leo",
+              "text": "Wow. What happens to me if you sell?"
+            },
+            {
+              "speaker": "dana",
+              "text": "I will not sell unless the staff are protected. That is a promise."
+            },
+            {
+              "speaker": "leo",
+              "text": "Then maybe now is the time to talk about my raise."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-3",
+          "character": "dana",
+          "time": "9am",
+          "text": "I told Leo about the offer and promised to protect the staff.",
+          "importance": 8,
+          "source": "conversation"
+        },
+        {
+          "id": "leo-3",
+          "character": "leo",
+          "time": "9am",
+          "text": "Dana told me a chain offered to buy the shop. I asked about my raise.",
+          "importance": 9,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for dana at 9am"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for leo at 9am"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for sam at 9am"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 9am"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 9am"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 9am"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 9am"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": false
+      },
+      "offer_learned": [
+        {
+          "character": "leo",
+          "from": "dana",
+          "zone": "back_room"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "time": "10am",
+      "locations": {
+        "dana": "counter",
+        "leo": "window_table",
+        "sam": "window_table"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Back to the register.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "window_table",
+          "final_zone": "window_table",
+          "reason": "Clear tables near the window.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "window_table",
+          "final_zone": "window_table",
+          "reason": "Stay put and chat with the barista.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "window_table",
+          "participants": [
+            "leo",
+            "sam"
+          ],
+          "turns": [
+            {
+              "speaker": "sam",
+              "text": "Quiet morning after the rush. How long have you worked here?"
+            },
+            {
+              "speaker": "leo",
+              "text": "Two years. I like it here. Can I get you a refill?"
+            },
+            {
+              "speaker": "sam",
+              "text": "Please. Does Dana ever talk about expanding?"
+            },
+            {
+              "speaker": "leo",
+              "text": "You would have to ask her. I just make the coffee."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "leo-4",
+          "character": "leo",
+          "time": "10am",
+          "text": "Sam asked whether Dana talks about expanding. I kept quiet because Sam is a customer.",
+          "importance": 6,
+          "source": "conversation"
+        },
+        {
+          "id": "sam-2",
+          "character": "sam",
+          "time": "10am",
+          "text": "Leo dodged my question about Dana's plans. He may know something.",
+          "importance": 7,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-4",
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-4",
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-4",
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for dana at 10am"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for leo at 10am"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for sam at 10am"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for sam at 10am"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 10am"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for sam at 10am"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 10am"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": false
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 4,
+      "time": "11am",
+      "locations": {
+        "dana": "patio",
+        "leo": "counter",
+        "sam": "patio"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "patio",
+          "final_zone": "patio",
+          "reason": "Get some air and think.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Someone has to cover the counter.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "patio",
+          "final_zone": "patio",
+          "reason": "Dana is alone on the patio; good moment.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "patio",
+          "participants": [
+            "dana",
+            "sam"
+          ],
+          "turns": [
+            {
+              "speaker": "sam",
+              "text": "Nice day. You look like you are carrying something heavy."
+            },
+            {
+              "speaker": "dana",
+              "text": "I got an offer to sell the shop today. I am not sure what to do."
+            },
+            {
+              "speaker": "sam",
+              "text": "A chain could bring stability. Your staff might even get benefits."
+            },
+            {
+              "speaker": "dana",
+              "text": "Maybe. Do you work for them, by any chance?"
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-4",
+          "character": "dana",
+          "time": "11am",
+          "text": "I told Sam about the offer. Sam argued for selling and I asked if she works for the chain.",
+          "importance": 8,
+          "source": "conversation"
+        },
+        {
+          "id": "sam-3",
+          "character": "sam",
+          "time": "11am",
+          "text": "Dana confirmed the offer and is undecided. She asked if I work for the chain.",
+          "importance": 9,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-4",
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-4",
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-3",
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-3",
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-4",
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-3",
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-4",
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for dana at 11am"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for leo at 11am"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for sam at 11am"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for sam at 11am"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 11am"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for sam at 11am"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 11am"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": true
+      },
+      "offer_learned": [
+        {
+          "character": "sam",
+          "from": "dana",
+          "zone": "patio"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "time": "1pm",
+      "locations": {
+        "dana": "back_room",
+        "leo": "back_room",
+        "sam": "out"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "Talk numbers with Leo.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "back_room",
+          "final_zone": "back_room",
+          "reason": "Follow up on the raise.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "out",
+          "final_zone": "out",
+          "reason": "Report back to the chain.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "back_room",
+          "participants": [
+            "dana",
+            "leo"
+          ],
+          "turns": [
+            {
+              "speaker": "leo",
+              "text": "If you stay independent, can you afford a raise?"
+            },
+            {
+              "speaker": "dana",
+              "text": "If I stay, yes. A small one, starting next month."
+            },
+            {
+              "speaker": "leo",
+              "text": "Then I would rather you stay."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "dana-5",
+          "character": "dana",
+          "time": "1pm",
+          "text": "Leo prefers I stay. I can afford his raise if I do.",
+          "importance": 8,
+          "source": "conversation"
+        },
+        {
+          "id": "leo-5",
+          "character": "leo",
+          "time": "1pm",
+          "text": "Dana said I get a raise next month if she stays independent.",
+          "importance": 9,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-5",
+            "dana-4",
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-5",
+            "leo-4",
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-3",
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-5",
+            "leo-4",
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-5",
+            "dana-4",
+            "dana-3",
+            "dana-2",
+            "dana-1"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-5",
+            "leo-4",
+            "leo-3",
+            "leo-2",
+            "leo-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for dana at 1pm"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for leo at 1pm"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for sam at 1pm"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 1pm"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 1pm"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 1pm"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": true
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 6,
+      "time": "3pm",
+      "locations": {
+        "dana": "counter",
+        "leo": "counter",
+        "sam": "window_table"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Afternoon shift.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Help with the afternoon crowd.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "window_table",
+          "final_zone": "window_table",
+          "reason": "One more try before close.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "counter",
+          "participants": [
+            "dana",
+            "leo"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "Can you restock the cups?"
+            },
+            {
+              "speaker": "leo",
+              "text": "On it."
+            }
+          ]
+        }
+      ],
+      "memories_written": [
+        {
+          "id": "leo-6",
+          "character": "leo",
+          "time": "3pm",
+          "text": "Quiet afternoon at the counter with Dana. Sam is back at the window.",
+          "importance": 3,
+          "source": "conversation"
+        },
+        {
+          "id": "dana-6",
+          "character": "dana",
+          "time": "3pm",
+          "text": "Ordinary afternoon with Leo. Sam came back.",
+          "importance": 3,
+          "source": "conversation"
+        }
+      ],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-6",
+            "dana-5",
+            "dana-4",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-6",
+            "leo-5",
+            "leo-4",
+            "leo-3",
+            "leo-2"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-3",
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-6",
+            "dana-5",
+            "dana-4",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-6",
+            "leo-5",
+            "leo-4",
+            "leo-3",
+            "leo-2"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for dana at 3pm"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for leo at 3pm"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for sam at 3pm"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 3pm"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 3pm"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": true
+      },
+      "offer_learned": []
+    },
+    {
+      "index": 7,
+      "time": "5pm",
+      "locations": {
+        "dana": "counter",
+        "leo": "counter",
+        "sam": "counter"
+      },
+      "decisions": [
+        {
+          "character": "dana",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Closing time: everyone meets at the counter.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "leo",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Closing time: everyone meets at the counter.",
+          "legal": true,
+          "override": null
+        },
+        {
+          "character": "sam",
+          "requested_zone": "counter",
+          "final_zone": "counter",
+          "reason": "Closing time: everyone meets at the counter.",
+          "legal": true,
+          "override": null
+        }
+      ],
+      "conversations": [
+        {
+          "zone": "counter",
+          "participants": [
+            "dana",
+            "leo",
+            "sam"
+          ],
+          "turns": [
+            {
+              "speaker": "dana",
+              "text": "I have decided. I am keeping the shop."
+            },
+            {
+              "speaker": "leo",
+              "text": "Thank you, Dana."
+            },
+            {
+              "speaker": "sam",
+              "text": "I understand. Good luck to you."
+            }
+          ]
+        }
+      ],
+      "memories_written": [],
+      "retrievals": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "memory_ids": [
+            "dana-6",
+            "dana-5",
+            "dana-4",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "memory_ids": [
+            "leo-6",
+            "leo-5",
+            "leo-4",
+            "leo-3",
+            "leo-2"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "memory_ids": [
+            "sam-3",
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "memory_ids": [
+            "dana-6",
+            "dana-5",
+            "dana-4",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "memory_ids": [
+            "leo-6",
+            "leo-5",
+            "leo-4",
+            "leo-3",
+            "leo-2"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "memory_ids": [
+            "sam-3",
+            "sam-2",
+            "sam-1"
+          ]
+        },
+        {
+          "character": "dana",
+          "purpose": "diary",
+          "memory_ids": [
+            "dana-6",
+            "dana-5",
+            "dana-4",
+            "dana-3",
+            "dana-2"
+          ]
+        },
+        {
+          "character": "leo",
+          "purpose": "diary",
+          "memory_ids": [
+            "leo-6",
+            "leo-5",
+            "leo-4",
+            "leo-3",
+            "leo-2"
+          ]
+        },
+        {
+          "character": "sam",
+          "purpose": "diary",
+          "memory_ids": [
+            "sam-3",
+            "sam-2",
+            "sam-1"
+          ]
+        }
+      ],
+      "prompts": [
+        {
+          "character": "dana",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for dana at 5pm"
+        },
+        {
+          "character": "leo",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for leo at 5pm"
+        },
+        {
+          "character": "sam",
+          "purpose": "decide",
+          "text": "(sample) decide prompt for sam at 5pm"
+        },
+        {
+          "character": "dana",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for dana at 5pm"
+        },
+        {
+          "character": "leo",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for leo at 5pm"
+        },
+        {
+          "character": "sam",
+          "purpose": "speak",
+          "text": "(sample) speak prompt for sam at 5pm"
+        }
+      ],
+      "knows_offer": {
+        "dana": true,
+        "leo": true,
+        "sam": true
+      },
+      "offer_learned": []
+    }
+  ],
+  "finale": {
+    "decision": "stay",
+    "reason": "I can keep my staff and give Leo his raise only if the shop stays mine.",
+    "diaries": {
+      "dana": "Today a chain offered to buy the shop, and I carried it alone through the rush. I told Leo first and promised to protect him. Sam pushed me to sell, which made me wonder who she really is. I am staying.",
+      "leo": "Dana told me about the buyout in the back room this morning. A regular kept asking questions, so I kept my mouth shut. Dana promised me a raise if she stays, and tonight she said she is staying.",
+      "sam": "I spent the day trying to learn if Dana would sell. She told me about the offer herself on the patio, then asked if I worked for the chain. I nudged her toward yes, but she chose to stay."
+    }
+  }
+}

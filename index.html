@@ -492,7 +492,7 @@
   var AI_SHARED = [
     "Keeps a private memory stream; no one else can read it",
     "Recalls its 5 most relevant memories before every choice",
-    "Picks its own room each hour and explains why",
+    "Picks its own room each hour, with a plan for who to talk to and why",
     "Only hears what is said in its own room"
   ];
   var AI_CAN = {
@@ -502,10 +502,14 @@
       "Chooses who to tell about the offer, and when"
     ],
     leo: [
+      "Holds a private card: a cafe across town offered him $2 more an hour, answer due tomorrow",
+      "Decides how hard to push for his raise and whether to mention the other offer",
       "Pushes for his raise when he gets Dana alone",
       "Senses when a customer is nearby and stays off money talk (the backend also blocks it)"
     ],
     sam: [
+      "Torn: a $5,000 bonus from the chain if Dana sells, but she genuinely loves the place",
+      "Decides how hard to push and how to keep her cover if someone gets suspicious",
       "Probes for which way Dana is leaning and nudges her toward selling",
       "Keeps her employer secret unless asked directly; the backend keeps her out of the back room"
     ]

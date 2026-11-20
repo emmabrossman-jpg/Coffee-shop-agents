@@ -29,13 +29,13 @@ SEEDS = {
     "sam": ("The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.", 8),
 }
 HABITS = {  # prompt-only nudges, each about the character's own job (B10 safe)
-    "dana": "You run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).",
+    "dana": "Sam is a regular customer, not staff; your only employee is Leo. You run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).",
     "leo": "You work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.",
     "sam": "Dana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.",
 }
 DEFAULT_ZONE = {"dana": "counter", "leo": "counter", "sam": "window_table"}
 OFFER_RE = re.compile(r"\b(?:buyout|buy[- ]out|buy (?:the|our|this|my) shop|sell(?:ing)? (?:the|our|this|my) shop|offer to buy"
-                      r"|the offer|acquire|acquisition|chain wants)\b", re.I)
+                      r"|the offer|(?:an|their|this|that) offer (?:on|for) (?:the|our|this|my) (?:shop|place|caf\w*)|made an offer|acquire|acquisition|chain wants)\b", re.I)
 MONEY_RE = re.compile(r"\b(?:money|raises?|pay|paid|salary|wages?|offers?|sell|selling|sold|sale|buyout|buy out|acquir\w*"
                       r"|prices?|dollars?|terms|deal)\b|\$", re.I)
 RESERVE = 12  # F2: calls kept for 5pm; once remaining calls reach this, regular slots skip to 5pm and parse retries stop

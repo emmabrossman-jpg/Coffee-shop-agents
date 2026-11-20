@@ -73,7 +73,7 @@ An array with one object per slot that ran, in order. A partial run (call cap or
 - `locations` is the state after decisions are applied. Every character appears exactly once.
 - If too few calls remain for the 5pm slot (12 kept in reserve), the remaining daytime slots are skipped: they appear with empty `decisions` and `conversations` and unchanged `locations`.
 - `knows_offer` is the state at the end of the slot. Once `true`, it stays `true`. Dana is `true` from slot 0.
-- `offer_learned` lists who first learned of the offer in this slot and who they heard it from (empty list if nobody). The backend sets it when a character hears a conversation turn that mentions the offer (whole-word, case-insensitive phrases: buyout, buy out, buy the shop, sell the shop, selling the shop, offer to buy, the offer, acquire, acquisition, chain wants) spoken by someone who already knows.
+- `offer_learned` lists who first learned of the offer in this slot and who they heard it from (empty list if nobody). The backend sets it when a character hears a conversation turn that mentions the offer (whole-word, case-insensitive phrases: buyout, buy out, buy the shop, sell the shop, selling the shop, offer to buy, the offer, an offer on (or for) the shop, made an offer, acquire, acquisition, chain wants) spoken by someone who already knows.
 
 #### Decision
 

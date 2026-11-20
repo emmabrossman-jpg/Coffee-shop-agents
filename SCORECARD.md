@@ -1,6 +1,6 @@
 # Scorecard
 
-- Log: `candidate.json`
+- Log: `events.json`
 - Judged at: 2026-11-20T16:51:57+00:00
 - Run: 8 of 8 slots, completed=True, stop_reason=None, sim calls=63
 - Judge model calls: 4 (claude-haiku-5-5)

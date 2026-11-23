@@ -98,6 +98,18 @@
   .stage > svg.map { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .tint { position: absolute; inset: 0; background: var(--tint); opacity: 0; pointer-events: none; transition: opacity 1.2s; mix-blend-mode: multiply; }
   .sprites { position: absolute; inset: 0; }
+  /* background guests: purely visual, behind the AI characters, never clickable */
+  .guests { position: absolute; inset: 0; pointer-events: none; }
+  .guest { position: absolute; width: 4.3%; transform: translate(-50%, -100%); opacity: 0; pointer-events: none;
+    font-size: clamp(8px, 1.05cqw, 11.5px); transition: opacity 0.4s, left linear, top linear; }
+  .guest.show { opacity: 0.72; }
+  .guest svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .guest.walking svg { animation: bob 0.32s ease-in-out infinite; }
+  .gbub { position: absolute; left: 50%; bottom: calc(100% + 0.5em); transform: translateX(-50%); width: max-content; max-width: clamp(100px, 24cqw, 220px);
+    background: var(--surface); color: var(--text); border: 1.5px solid var(--me); border-radius: 10px; padding: 0.3em 0.6em; line-height: 1.3; display: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.14); }
+  .gbub .who { display: block; font-size: 0.85em; color: var(--muted); font-weight: 600; }
+  .guest.talking .gbub { display: block; }
   .hint { margin-top: 6px; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
   .hint kbd { font: 600 11px ui-monospace, Menlo, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: var(--surface); }
 
@@ -386,6 +398,7 @@
         <g class="zl"><rect x="830" y="560" width="120" height="26" rx="13"/><text x="890" y="573">Out (street)</text></g>
       </svg>
       <div class="tint" id="tint"></div>
+      <div class="guests" id="guests" aria-hidden="true"></div>
       <div class="sprites" id="sprites"></div>
       <div class="toasts" id="toasts" aria-live="polite"></div>
     </div>
@@ -450,7 +463,7 @@
   var data = null, loadedFile = "", slots = [], N = 0, chars = [];
   var idx = 0, started = false, playing = false, speed = 1, SPEEDS = [1, 2, 4];
   var beats = [], turnPos = -1, typing = false, slotDone = false, typeTimer = null, fullText = "";
-  var gen = 0, flowTimers = [], autoTimers = [];
+  var gen = 0, flowTimers = [], autoTimers = [], guestTimers = [];
   var pos = {}, sprites = {}, walkers = {}, rafId = null, walkDone = null, lastTs = null;
   var shownKnows = {}, panelId = null;
 
@@ -485,33 +498,31 @@
     list.push(t);
   }
   function clearList(list) { while (list.length) clearTimeout(list.pop()); }
-  function clearAll() { clearList(flowTimers); clearList(autoTimers); if (typeTimer) { clearInterval(typeTimer); typeTimer = null; } }
+  function clearAll() { clearList(flowTimers); clearList(autoTimers); clearList(guestTimers); if (typeTimer) { clearInterval(typeTimer); typeTimer = null; } }
   function holdFor(text) { return Math.min(6000, 1000 + String(text || "").length * 28) / speed; }
 
   /* ---------- what each character's AI can do (shown in its panel) ---------- */
   var AI_SHARED = [
     "Keeps a private memory stream; no one else can read it",
     "Recalls its 5 most relevant memories before every choice",
-    "Picks its own room each hour, with a plan for who to talk to and why",
+    "Makes 3 decisions each hour on its own: which room, who to seek out, and whether to share, hint at or keep its secret",
     "Only hears what is said in its own room"
   ];
   var AI_CAN = {
     dana: [
-      "Holds private facts about the offer: $420,000 cash, Leo kept only 6 months, the shop clears $38,000 a year, rent up 15% in March, a $12,000 espresso machine due",
-      "Weighs money, costs, Leo's job and the regulars, then decides sell or stay at 5pm",
-      "Chooses who to tell about the offer, and when"
+      "Private facts: $420,000 cash offer, Leo kept only 6 months, the shop clears $38,000 a year, rent up 15% in March, a $12,000 espresso machine due",
+      "Secret to manage: the chain's offer",
+      "Decides sell or stay at 5pm, in her own words"
     ],
     leo: [
-      "Holds a private card: a cafe across town offered him $2 more an hour, answer due tomorrow",
-      "Decides how hard to push for his raise and whether to mention the other offer",
-      "Pushes for his raise when he gets Dana alone",
-      "Senses when a customer is nearby and stays off money talk (the backend also blocks it)"
+      "Private facts: a cafe across town offered him $2 more an hour, answer due tomorrow",
+      "Secret to manage: that rival job offer",
+      "Backend blocks money talk when a customer shares his room"
     ],
     sam: [
-      "Torn: a $5,000 bonus from the chain if Dana sells, but she genuinely loves the place",
-      "Decides how hard to push and how to keep her cover if someone gets suspicious",
-      "Probes for which way Dana is leaning and nudges her toward selling",
-      "Keeps her employer secret unless asked directly; the backend keeps her out of the back room"
+      "Private facts: a $5,000 bonus from the chain if Dana sells, and she likes the place",
+      "Secret to manage: that she scouts for the chain (backend stops her volunteering it)",
+      "Backend keeps her out of the back room"
     ]
   };
 
@@ -529,6 +540,10 @@
       back = '<path d="M11.5 20 Q11 6 25 6 Q39 6 38.5 20 L38.5 31 Q36 33 33.5 31 L33.5 21 H16.5 L16.5 31 Q14 33 11.5 31Z" fill="#c9a227"/>';
       extra = '<path d="M13 19 Q13 7.5 25 7.5 Q37 7.5 37 19 Q33 12.5 24 13 Q17 13.5 13 19Z" fill="#c9a227"/>' +
         '<path d="M14 31 Q25 38 36 31 L36 35 Q25 42 14 35Z" fill="#e9e1d0"/>';
+    } else if (id === "priya") {
+      extra = '<path d="M13 19 Q12.5 6.5 25 6.5 Q37.5 6.5 37 19 Q35 12 27 11.5 Q19 12 13 19Z" fill="#1f1712"/>';
+    } else if (id === "marcus") {
+      extra = '<path d="M12.5 15 Q13 4.5 25 4.5 Q37 4.5 37.5 15Z" fill="#3a5568"/><rect x="12" y="13" width="26" height="4" rx="2" fill="#2c4352"/><circle cx="25" cy="4.5" r="2.4" fill="#2c4352"/>';
     } else extra = '<path d="M13 18 Q13 7 25 7 Q37 7 37 18 Q31 12 25 12 Q19 12 13 18Z" fill="var(--hair)"/>';
     return '<svg viewBox="0 0 50 72" aria-hidden="true">' +
       '<ellipse cx="25" cy="68" rx="15" ry="4" fill="rgba(0,0,0,.22)"/>' +
@@ -679,6 +694,7 @@
     Object.keys(sprites).forEach(function (id) { sprites[id].pop.classList.remove("show"); sprites[id].root.classList.remove("bump"); sprites[id].bar.classList.remove("show"); });
     $("toasts").innerHTML = "";
     idx = i; turnPos = -1; slotDone = false; typing = false;
+    hideGuests();
     if (i >= N) { playing = false; updateHud(); showEnd(); renderPanel(); return; }
     hideEnd();
     var s = slots[i];
@@ -696,6 +712,7 @@
       else if (p.x !== tgt[0] || p.y !== tgt[1]) list.push({ id: c.id, path: buildPath([p.x, p.y], p.zone || "out", z, tgt) });
       setZone(c.id, z);
     });
+    runGuests(i);
     var g = gen;
     function arrived() {
       if (g !== gen) return;
@@ -731,8 +748,17 @@
     var r = String(d.reason).replace(/\s+/g, " ").trim();
     if (r.length > 90) r = r.slice(0, 89).replace(/\s+\S*$/, "") + "\u2026";
     var z = d.requested_zone || d.final_zone;
-    return z ? zoneName(z) + ": " + r : r;
+    var bits = [];
+    if (z) bits.push(zoneName(z));
+    var known = function (map, k) { return typeof k === "string" && Object.prototype.hasOwnProperty.call(map, k); };
+    if (d.approach === "nobody") bits.push("keeping to myself");
+    else if (typeof d.approach === "string" && chars.some(function (c) { return c.id === d.approach; })) bits.push("find " + nameOf(d.approach));
+    if (known(SECRET_LABEL, d.secret)) bits.push(SECRET_LABEL[d.secret]);
+    return bits.length ? bits.join(" \u00b7 ") + ": " + r : r;
   }
+  var SECRET_LABEL = { share: "share my secret", hint: "drop a hint", keep: "keep my secret" };
+  var SECRET_OF = { dana: "the chain's offer", leo: "his rival job offer", sam: "her work scouting for the chain" };
+  var SECRET_VERB = { share: "share", hint: "hint at", keep: "keep quiet about" };
   function startTurns() {
     if (beats.length) playTurn(0);
     else later(flowTimers, finishSlot, 500);
@@ -813,7 +839,7 @@
   function hideBubbleHints() { Object.keys(sprites).forEach(function (id) { sprites[id].bub.classList.remove("waiting"); }); }
   function setPlaying(on) {
     playing = on;
-    if (on) resume(); else clearList(autoTimers);
+    if (on) resume(); else { clearList(autoTimers); hideGuests(); }
     updateHud();
   }
   function restart() {
@@ -828,6 +854,68 @@
     $("toasts").appendChild(t);
     setTimeout(function () { t.remove(); }, Math.max(2500, 4200 / speed));
   }
+  /* ---------- background guests (visual only; not in events.json, never clickable) ---------- */
+  var GUESTS = [
+    { id: "priya", name: "Priya", color: "#4f8a5b", spot: [672, 205], start: 500 },
+    { id: "marcus", name: "Marcus", color: "#c39a2e", spot: [312, 205], start: 4200, skipFirst: true }
+  ];
+  var GUEST_LINES = ["One oat latte, please.", "Medium drip, to go.", "Could I get a cortado?", "Two croissants and a cold brew.", "A flat white, thanks.", "Just an iced tea, please."];
+  var DOOR = [560, 560], AISLE = [600, 330];
+  function buildGuests() {
+    var layer = $("guests"); layer.innerHTML = "";
+    GUESTS.forEach(function (g) {
+      var n = el("div", "guest"); n.style.setProperty("--me", g.color);
+      n.innerHTML = figureSvg(g.id, "");
+      var b = el("div", "gbub"); b.appendChild(el("span", "who", g.name + ", guest"));
+      g.txt = el("span"); b.appendChild(g.txt); n.appendChild(b);
+      layer.appendChild(n); g.node = n;
+      gPlace(g, DOOR, 0);
+    });
+  }
+  function gPlace(g, p, ms) {
+    var n = g.node; if (!n) return;
+    n.style.transitionDuration = "0.4s, " + ms + "ms, " + ms + "ms";
+    n.style.left = (p[0] / 10) + "%"; n.style.top = (p[1] / 6.2) + "%";
+    g.at = p;
+  }
+  function hideGuests() {
+    clearList(guestTimers);
+    GUESTS.forEach(function (g) { if (g.node) g.node.classList.remove("show", "talking", "walking"); });
+  }
+  function gWalk(g, path, then) {
+    // walk a list of points; distance based so it scales with the speed setting
+    if (!path.length) { g.node.classList.remove("walking"); then(); return; }
+    var p = path[0], d = Math.hypot(p[0] - g.at[0], p[1] - g.at[1]), ms = d / (240 * speed) * 1000;
+    g.node.classList.add("walking"); gPlace(g, p, ms);
+    later(guestTimers, function () { gWalk(g, path.slice(1), then); }, ms);
+  }
+  function runGuests(i) {
+    hideGuests();
+    if (!playing || i >= N - 1) return; // the 5pm finale stays clean
+    GUESTS.forEach(function (g, k) {
+      if (!g.node || (g.skipFirst && i === 0)) return;
+      var line = GUEST_LINES[(i * 2 + k * 3) % GUEST_LINES.length];
+      later(guestTimers, function () {
+        var r = rm();
+        gPlace(g, r ? g.spot : DOOR, 0);
+        later(guestTimers, function () {
+          g.node.classList.add("show");
+          var order = function () {
+            g.txt.textContent = line; g.node.classList.add("talking");
+            later(guestTimers, function () {
+              g.node.classList.remove("talking");
+              later(guestTimers, function () {
+                if (r) { g.node.classList.remove("show"); return; }
+                gWalk(g, [AISLE, DOOR], function () { g.node.classList.remove("show"); });
+              }, 500 / speed);
+            }, 2200 / speed);
+          };
+          if (r) later(guestTimers, order, 400); else gWalk(g, [AISLE, g.spot], order);
+        }, 40);
+      }, g.start / speed);
+    });
+  }
+
   function showBlocked(s) {
     var any = false;
     arr(s.decisions).forEach(function (d) {
@@ -986,7 +1074,10 @@
     dl.appendChild(el("dt", null, "Decision at " + (s.time || "this slot")));
     var dd = el("dd");
     if (d) {
-      dd.appendChild(document.createTextNode("Went to " + zoneName(d.final_zone || zoneOf(obj(s.locations)[c.id])) + ". " + (d.reason || "")));
+      dd.appendChild(document.createTextNode("Went to " + zoneName(d.final_zone || zoneOf(obj(s.locations)[c.id])) + ". " +
+        (d.approach ? (d.approach === "nobody" ? "Approached nobody. " : "Wanted to talk to " + nameOf(d.approach) + ". ") : "") +
+        (Object.prototype.hasOwnProperty.call(SECRET_VERB, d.secret) && SECRET_OF[c.id] ? "Chose to " + SECRET_VERB[d.secret] + " " + SECRET_OF[c.id] + ". " : "") +
+        (d.secret_override ? "(" + d.secret_override + ") " : "") + (d.reason || "")));
       if (d.legal === false) { var f = el("span", "flag"); f.appendChild(el("b", null, "Blocked.")); f.appendChild(document.createTextNode(d.override || "Move rejected")); dd.appendChild(f); }
     } else dd.textContent = "No decision logged";
     dl.appendChild(dd);
@@ -1137,7 +1228,7 @@
       $("partial").hidden = false;
       $("partial").textContent = "Partial run: " + N + " of 8 slots" + (meta.stop_reason ? " (" + meta.stop_reason + ")" : "");
     }
-    buildSprites(); buildTracker();
+    buildSprites(); buildGuests(); buildTracker();
     var cast = $("cast"); cast.innerHTML = "";
     chars.forEach(function (c) {
       var d = withColor(el("div"), c.id);

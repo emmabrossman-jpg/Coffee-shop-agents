@@ -30,11 +30,13 @@ SEEDS = {
 }
 FACTS = {  # facts only, no stage directions: each AI decides for itself how to act (B10: own info only)
     "dana": ("Leo is your only employee. Sam is a regular customer. The back room is private and staff only. "
+             "Customers order at the counter, and only staff (you or Leo) can serve them; one of you is enough. "
              "Private facts about the offer: the chain offers $420,000 cash, closing in 30 days, and promises to keep Leo "
              "for only 6 months on the chain's pay scale. The shop clears about $38,000 a year. Your lease renews in March "
              "with a 15% rent increase, and the espresso machine needs a $12,000 replacement soon. You have run the shop "
              "for 9 years and the regulars come for its neighborhood feel."),
     "leo": ("Dana owns the shop. Sam is a regular customer. The back room is private and staff only. "
+            "Customers order at the counter, and only staff (you or Dana) can serve them; one of you is enough. "
             "Private: a cafe across town offered you a job paying $2 more an hour, and you must answer them by tomorrow."),
     "sam": ("Dana owns the shop and Leo is her barista. The back room is private and staff only. "
             "Private: the chain pays you a $5,000 bonus if Dana sells. You have come here for years and like the place."),
@@ -43,14 +45,11 @@ GUESTS = {  # scripted walk-in customers: set lines, no AI calls; the AI charact
     "priya": {"id": "priya", "name": "Priya", "role": "Guest, works in the office upstairs"},
     "marcus": {"id": "marcus", "name": "Marcus", "role": "Guest, a delivery driver"},
 }
-GUEST_VISITS = {  # slot index -> (guest, line said at the counter); none at 5pm
+GUEST_VISITS = {  # slot index -> (guest, line said at the counter); quiet hours in between, none at 5pm
     0: ("priya", "Morning! One oat latte, please. Busy already, huh?"),
     1: ("marcus", "Medium drip to go. Did you hear a chain bought the bakery down the street?"),
-    2: ("priya", "Could I get a cortado? This is still my favorite spot on the block."),
-    3: ("marcus", "Two croissants and a cold brew. Everything costs more this year, doesn't it?"),
-    4: ("priya", "Iced tea, please. Someone in my office said this place might be sold. Is that true?"),
+    3: ("priya", "Iced tea, please. Someone in my office said this place might be sold. Is that true?"),
     5: ("marcus", "Just a muffin and a water. You folks hiring? My cousin needs work."),
-    6: ("priya", "Last coffee of the day for me. Please never change this place."),
 }
 def name_of(pid):
     return (CHARS.get(pid) or GUESTS.get(pid) or {"name": pid})["name"]
@@ -157,7 +156,17 @@ class Sim:
         t, here = SLOTS[i], self.loc[char]
         mems = self.retrieve(char, "decide", f"{t} where to go now, at {here}. {CHARS[char]['goal']}")
         others = [o for o in CHARS if o != char]
-        user = (f"It is {t}. You are at: {here}.\nYour most relevant memories:\n{self.mem_block(mems)}\n\n"
+        streak = 0
+        for past in reversed(self.slots[:-1]):
+            if past["locations"].get(char) != here:
+                break
+            streak += 1
+        noticed = ""
+        if streak >= 2:
+            noticed += f"You have been at the {here} for {streak} hours in a row.\n"
+        if char in ("dana", "leo") and GUEST_VISITS.get(i):
+            noticed += "The door chime just rang: a customer is walking up to the counter to order.\n"
+        user = (f"It is {t}. You are at: {here}.\n{noticed}Your most relevant memories:\n{self.mem_block(mems)}\n\n"
                 "Make three decisions for this hour, your own way:\n"
                 f"1. zone: where to spend it, one of {', '.join(ZONES)}, or out (away from the shop).\n"
                 f"2. approach: who you want to seek out, one of {', '.join(others)}, or nobody.\n"
@@ -236,6 +245,7 @@ class Sim:
             for g in self.slot.get("guests", []):
                 if guest and g["id"] == guest[0]:
                     g["served"] = spoke
+                    g["served_by_staff"] = any(t["speaker"] in ("dana", "leo") for t in conv["turns"])
             if not spoke and conv in self.slot["conversations"]:
                 self.slot["conversations"].remove(conv)
         if not any(t["speaker"] in CHARS for t in conv["turns"]):

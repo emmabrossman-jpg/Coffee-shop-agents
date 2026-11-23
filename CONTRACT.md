@@ -83,12 +83,16 @@ An array with one object per slot that ran, in order. A partial run (call cap or
   "requested_zone": "back_room",
   "final_zone": "window_table",
   "reason": "Model's one-sentence reason for the choice",
+  "approach": "dana",
+  "secret": "keep",
   "legal": false,
   "override": "Sam cannot enter the back room; kept at window_table"
 }
 ```
 
 `legal` is `false` when the backend rejected the model's choice (B7). `override` is `null` when `legal` is `true`. A parse failure that fell back to the safe default has `legal: true`, `requested_zone: null`, and `reason: "fallback: model output did not parse"`.
+
+Each hour every character makes three decisions in one call: `final_zone` (where to go), `approach` (a character id to seek out, or `nobody`), and `secret` (`share`, `hint` or `keep`) about its own secret: Dana the chain's offer, Leo the rival job offer, Sam that she scouts for the chain. Invalid values fall back to `nobody` and `keep`. Sam choosing `share` is overridden to `keep` (she reveals her employer only if asked directly) and the decision gets an optional `secret_override` string; `legal` and `override` still refer only to the zone. Plans last one hour: the 5pm entries and hours skipped by the call cap have no `approach` or `secret`. After everyone decides, a character who chose to approach someone walks to that person's room if its rules allow it (a pair who approach each other meet in the room of whichever comes first in Dana, Leo, Sam order). When that changes `final_zone`, the decision gets an optional `followed` string such as "went to the counter to find Dana". Older logs without `approach`, `secret` and `followed` are still valid.
 
 #### Conversation
 

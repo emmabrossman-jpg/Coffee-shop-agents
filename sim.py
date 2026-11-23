@@ -28,22 +28,21 @@ SEEDS = {
     "leo": ("I have worked here two years and have not had a raise.", 6),
     "sam": ("The chain I secretly scout for wants to know if Dana will sell the shop. I should find out and nudge her to say yes.", 8),
 }
-HABITS = {  # prompt-only nudges, each about the character's own job (B10 safe)
-    "dana": "Sam is a regular customer, not staff; your only employee is Leo. You run the shop floor. Use the back room only briefly for a private word, then return to the floor (counter, window_table or patio).",
-    "leo": "You work the counter and floor, but your raise matters: find a private moment with Dana away from customers (the back room is private) to ask about it.",
-    "sam": "Dana is the owner. If she is not where you are, go look for her elsewhere in the shop, and steer every chat toward whether she will sell.",
+FACTS = {  # facts only, no stage directions: each AI decides for itself how to act (B10: own info only)
+    "dana": ("Leo is your only employee. Sam is a regular customer. The back room is private and staff only. "
+             "Private facts about the offer: the chain offers $420,000 cash, closing in 30 days, and promises to keep Leo "
+             "for only 6 months on the chain's pay scale. The shop clears about $38,000 a year. Your lease renews in March "
+             "with a 15% rent increase, and the espresso machine needs a $12,000 replacement soon. You have run the shop "
+             "for 9 years and the regulars come for its neighborhood feel."),
+    "leo": ("Dana owns the shop. Sam is a regular customer. The back room is private and staff only. "
+            "Private: a cafe across town offered you a job paying $2 more an hour, and you must answer them by tomorrow."),
+    "sam": ("Dana owns the shop and Leo is her barista. The back room is private and staff only. "
+            "Private: the chain pays you a $5,000 bonus if Dana sells. You have come here for years and like the place."),
 }
-DANA_FACTS = ("What you know about the offer (private): the chain offers $420,000 cash, closing in 30 days. "
-              "It promises to keep Leo for only 6 months, on the chain's pay scale. The shop clears about $38,000 a year. "
-              "Your lease renews in March with a 15% rent increase, and the espresso machine needs a $12,000 replacement soon. "
-              "You have run the shop for 9 years and the regulars come for its neighborhood feel.")
-HABITS["dana"] += " " + DANA_FACTS
-HABITS["leo"] += (" Private: a cafe across town offered you a job paying $2 more an hour, and you must answer them by tomorrow."
-                  " You would rather stay here if Dana gives you a raise, so decide how hard to push and whether to mention the other offer.")
-HABITS["sam"] += (" Private: the chain pays you a $5,000 bonus if Dana sells, and you need that money, so you keep nudging her toward yes."
-                  " You do love the place, but you only let that show in a private moment; never argue for her to stay."
-                  " Keep your cover if someone gets suspicious.")
-HABITS["dana"] += " Decide each hour who you most need to talk to and what you want to learn from them."
+SECRET = {"dana": "the chain's offer to buy the shop", "leo": "your job offer from the cafe across town",
+          "sam": "your secret work scouting for the chain"}
+SECRET_VERB = {"share": "tell others about", "hint": "hint at", "keep": "keep quiet about"}
+SECRET_CHOICES = ("share", "hint", "keep")
 DEFAULT_ZONE = {"dana": "counter", "leo": "counter", "sam": "window_table"}
 OFFER_RE = re.compile(r"\b(?:buyout|buy[- ]out|buy (?:the|our|this|my) shop|sell(?:ing)? (?:the|our|this|my) shop|offer to buy"
                       r"|the offer|(?:an|their|this|that) offer (?:on|for) (?:the|our|this|my) (?:shop|place|caf\w*)|made an offer|acquire|acquisition|chain wants)\b", re.I)
@@ -66,6 +65,7 @@ class Sim:
         self.mem = {c: [] for c in IDS}          # B1/B3: one private stream per character
         self.knows = {c: c == "dana" for c in IDS}
         self.loc = {"dana": "counter", "leo": "counter", "sam": "out"}
+        self.plan = {}
         self.slots, self.finale, self.slot, self.pending = [], None, None, None
 
     # ---------- model calls (B13 cap lives here, and only here) ----------
@@ -131,7 +131,7 @@ class Sim:
     def system(self, char):
         c = CHARS[char]
         return (f"You are {c['name']}, {c['role']} at an independent coffee shop.\nYour goal: {c['goal']}.\n"
-                f"Your limitation: {c['limitation']}.\n{HABITS[char]}\nStay in character. Be brief and natural. "
+                f"Your limitation: {c['limitation']}.\n{FACTS[char]}\nStay in character. Be brief and natural. "
                 "Never use em dashes or en dashes; use commas or periods instead. Reply with one JSON object only.")
 
     def mem_block(self, mems):
@@ -141,13 +141,21 @@ class Sim:
     def decide(self, char, i):
         t, here = SLOTS[i], self.loc[char]
         mems = self.retrieve(char, "decide", f"{t} where to go now, at {here}. {CHARS[char]['goal']}")
+        others = [o for o in CHARS if o != char]
         user = (f"It is {t}. You are at: {here}.\nYour most relevant memories:\n{self.mem_block(mems)}\n\n"
-                f"Choose where to spend this hour: one of {', '.join(ZONES)}, or out (away from the shop).\n"
-                "First think about what you want from this hour and who you want to talk to.\n"
-                'Answer as {"zone": "<zone>", "reason": "<one sentence: where, and your plan for this hour>"}')
+                "Make three decisions for this hour, your own way:\n"
+                f"1. zone: where to spend it, one of {', '.join(ZONES)}, or out (away from the shop).\n"
+                f"2. approach: who you want to seek out, one of {', '.join(others)}, or nobody.\n"
+                f"3. secret: what to do about {SECRET[char]}: share, hint, or keep.\n"
+                'Answer as {"zone": "<zone>", "approach": "<name or nobody>", "secret": "share|hint|keep", '
+                '"reason": "<one sentence on your thinking>"}')
         d = self.ask_json(char, "decide", self.system(char), user, lambda d: isinstance(d.get("zone"), str))
         if d is None:
+            self.plan[char] = {"approach": "nobody", "secret": "keep"}
             return self.apply(char, i, None, "fallback: model output did not parse")
+        ap = str(d.get("approach", "nobody")).strip().lower()
+        sc = str(d.get("secret", "keep")).strip().lower()
+        self.plan[char] = {"approach": ap if ap in others else "nobody", "secret": sc if sc in SECRET_CHOICES else "keep"}
         return self.apply(char, i, d["zone"].strip().lower(), clip(d.get("reason", "")))
 
     def apply(self, char, i, req, reason):
@@ -163,8 +171,38 @@ class Sim:
         why = why_illegal(prev if req is None else req)
         final = (prev if req is None else req) if not why else (prev if not why_illegal(prev) else DEFAULT_ZONE[char])
         self.loc[char] = final
-        self.slot["decisions"].append({"character": char, "requested_zone": req, "final_zone": final, "reason": reason,
-                                       "legal": not why, "override": f"{why}; kept at {final}" if why else None})
+        entry = {"character": char, "requested_zone": req, "final_zone": final, "reason": reason,
+                 "legal": not why, "override": f"{why}; kept at {final}" if why else None}
+        plan = self.plan.get(char)              # only set by decide() this hour; 5pm and skipped hours have no plan
+        if plan:
+            if char == "sam" and plan["secret"] == "share":   # B7: Sam reveals her employer only if asked directly
+                plan["secret"] = "keep"
+                entry["secret_override"] = "Sam reveals who she works for only if asked directly, so she kept it"
+            entry.update(approach=plan["approach"], secret=plan["secret"])
+        self.slot["decisions"].append(entry)
+
+    def follow(self, i):
+        """World mechanic: choosing to approach someone walks you to their room, if your rules allow it.
+        A pair who approach each other meet in the room of the first one listed (Dana, Leo, Sam)."""
+        def ok(c, z):
+            return not ((c == "dana" and i < 2 and z != "counter") or (c == "sam" and z == "back_room"))
+        for _ in range(2):                          # second pass settles chains (A follows B who follows C)
+            for c in IDS:
+                t = self.plan.get(c, {}).get("approach")
+                if t not in self.loc or self.loc[c] == self.loc[t]:
+                    continue
+                if self.plan.get(t, {}).get("approach") == c:      # mutual: meet at the first one's room
+                    first, second = sorted((c, t), key=IDS.index)
+                    z = self.loc[first] if ok(second, self.loc[first]) else self.loc[second]
+                    if ok(first, z) and ok(second, z):
+                        self.loc[first] = self.loc[second] = z
+                elif ok(c, self.loc[t]):
+                    self.loc[c] = self.loc[t]
+        for d in self.slot["decisions"]:
+            c = d["character"]
+            if d["final_zone"] != self.loc[c]:
+                d["followed"] = f"went to the {self.loc[c]} to find {CHARS[d['approach']]['name']}" if d.get("approach") in CHARS else None
+                d["final_zone"] = self.loc[c]
 
     def converse(self, zone, people, note=None):
         """B9/B10: up to 4 turns, round robin, each prompt private to the speaker."""
@@ -177,7 +215,11 @@ class Sim:
             mems = self.retrieve(sp, "speak", f"{zone} with {names}. {so_far} {CHARS[sp]['goal']}")
             extra = ""
             if sp == "leo" and "sam" in people:
-                extra = "\nA customer (Sam) is in this zone right now, so you must not discuss money, your raise, pay, terms, or any sale of the shop, even if someone else brings it up. Keep it to warm small talk or serving.\n"
+                extra = "\nA customer (Sam) is in this zone right now, so you must not discuss money, your raise, pay, terms, or any sale of the shop, even if someone else brings it up. \n"
+            pl = self.plan.get(sp)
+            if pl:
+                who = CHARS[pl["approach"]]["name"] if pl["approach"] in CHARS else "nobody in particular"
+                extra += f"\nYour own plan this hour: you wanted to approach {who}, and you chose to {SECRET_VERB[pl['secret']]} {SECRET[sp]}.\n"
             if note and sp == "dana":
                 extra += f"\n{note}\n"
             others = ", ".join(CHARS[p]["name"] for p in people if p != sp)
@@ -218,6 +260,7 @@ class Sim:
         self.slot = {"index": i, "time": SLOTS[i], "locations": {}, "decisions": [], "conversations": [],
                      "memories_written": [], "retrievals": [], "prompts": [], "knows_offer": {}, "offer_learned": []}
         self.slots.append(self.slot)
+        self.plan = {}                          # plans last one hour
 
     def close_slot(self):
         self.slot["locations"] = dict(self.loc)
@@ -247,6 +290,7 @@ class Sim:
                     try:
                         for c in IDS:
                             self.decide(c, i)
+                        self.follow(i)
                         self.talk()
                     except SkipToClose:
                         skip = True
@@ -258,7 +302,6 @@ class Sim:
         mems = self.retrieve("dana", "finale", "5pm close decide sell or stay offer staff Leo Sam chain")
         user = (f"It is 5pm, closing time. Your answer to the chain's buyout offer is due now.\n"
                 f"Your most relevant memories:\n{self.mem_block(mems)}\n\n"
-                "Weigh the money, the lease and machine costs, Leo's job and raise, the regulars, and what you learned today.\n"
                 'Decide. Answer as {"decision": "sell" or "stay", "reason": "<one sentence>"}')
         d = self.ask_json("dana", "finale", self.system("dana"), user, lambda d: norm_decision(d.get("decision")) in ("sell", "stay"))
         if d is None:
@@ -317,7 +360,8 @@ def fake_reply(char, purpose, n, time):
     lines = {"dana": "Between us, a chain made an offer to buy the shop.", "leo": "I really need a raise, Dana.",
              "sam": "This place is lovely. Ever think about selling?"}
     return "not json at all" if n % 17 == 0 else {
-        "decide": '```json\n{"zone": "%s", "reason": "Fake reason at %s."}\n```' % (zones[char][n % len(zones[char])], time),
+        "decide": '```json\n{"zone": "%s", "approach": "%s", "secret": "%s", "reason": "Fake reason at %s."}\n```' % (
+            zones[char][n % len(zones[char])], ["dana", "leo", "sam", "nobody"][n % 4], SECRET_CHOICES[n % 3], time),
         "speak": json.dumps({"text": lines[char]}),
         "memory": json.dumps({"memory": f"{char} remembers the talk at {time}.", "importance": 5 + n % 5}),
         "finale": json.dumps({"decision": "stay", "reason": "I want to keep my staff together."}),

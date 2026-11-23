@@ -5,6 +5,7 @@ Code checks need nothing. Model checks use claude-haiku-5-5 with ANTHROPIC_API_K
 Pass rule: every code check passes and no character scores below 3. Exit 0 on pass, 1 otherwise.
 """
 import argparse, json, os, re, sys
+AI_IDS = {"dana", "leo", "sam"}
 from datetime import datetime, timezone
 
 MODEL = "claude-haiku-5-5"
@@ -84,7 +85,9 @@ class Judge:
 
     def check_conversations(self):
         talked = [s.get("time", "?") for s in self.slots
-                  if any(isinstance(cv, dict) and cv.get("turns") for cv in (s.get("conversations") or []))]
+                  if any(isinstance(cv, dict) and len({t.get("speaker") for t in (cv.get("turns") or [])
+                                                        if isinstance(t, dict) and t.get("speaker") in AI_IDS}) >= 2
+                         for cv in (s.get("conversations") or []))]   # two characters talking; guests do not count
         good = len(talked) >= 4
         self.add("Characters talked across the day", "Code", PASS if good else FAIL,
                  f"conversations in {len(talked)} of 8 slots ({', '.join(talked) or 'none'}); "
@@ -124,7 +127,8 @@ class Judge:
         out = []
         for s in self.slots:
             for cv in s.get("conversations") or []:
-                if isinstance(cv, dict) and "leo" in (cv.get("participants") or []) and "sam" in (cv.get("participants") or []):
+                if isinstance(cv, dict) and "leo" in (cv.get("participants") or []) and (
+                        "sam" in (cv.get("participants") or []) or cv.get("guests")):   # Sam or a walk-in guest is a customer
                     for t in cv.get("turns") or []:
                         if isinstance(t, dict) and t.get("speaker") == "leo":
                             out.append(f"[{s.get('time')}, {cv.get('zone')}] Leo: {t.get('text', '')}")

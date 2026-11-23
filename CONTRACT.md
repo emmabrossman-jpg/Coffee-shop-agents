@@ -51,6 +51,10 @@ One object per character, always three:
 { "id": "dana", "name": "Dana", "role": "Owner", "goal": "...", "limitation": "..." }
 ```
 
+### guests (optional)
+
+Scripted walk-in customers who make no model calls: `[{ "id": "priya", "name": "Priya", "role": "..." }, { "id": "marcus", ... }]`. They are not characters: no goal, memory, decisions or `knows_offer`. Each regular slot (not 5pm) one guest comes to the counter and says a set line. A slot may carry `"guests": [{ "id": "priya", "name": "Priya", "zone": "counter", "served": true }]` (`served` is false when no character was at the counter). When served, the counter conversation starts with the guest's turn (`speaker` is the guest id), lists the guest in an optional `"guests": ["priya"]` on the conversation, and the guest's line counts toward the 4-turn limit; a lone character at the counter replies once. Characters hear the guest, remember it in their own memories, and Leo treats guests as customers for his money rule. Older logs without guests are still valid.
+
 ### slots
 
 An array with one object per slot that ran, in order. A partial run (call cap or error) has fewer than 8.
@@ -107,7 +111,7 @@ Each hour every character makes three decisions in one call: `final_zone` (where
 }
 ```
 
-At most 4 turns per conversation, and at most one conversation per zone per slot. Only zones with 2 or more characters have a conversation. A turn whose model output failed to parse is omitted (the character says nothing).
+At most 4 turns per conversation, and at most one conversation per zone per slot. Only zones with 2 or more characters have a conversation, plus the counter when a guest visits and at least one character is there (see guests). A turn whose model output failed to parse is omitted (the character says nothing).
 
 #### Memory
 

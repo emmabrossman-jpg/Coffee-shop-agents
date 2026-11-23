@@ -478,12 +478,14 @@
   function obj(x) { return x && typeof x === "object" && !Array.isArray(x) ? x : {}; }
   function charObj(id) { return chars.find(function (c) { return c.id === id; }) || null; }
   function nameOf(id) {
-    var c = charObj(id);
+    var c = charObj(id), gu = c ? null : guestObj(id);
+    if (gu) return gu.name + " (guest)";
     return c && c.name ? c.name : (id ? String(id).charAt(0).toUpperCase() + String(id).slice(1) : "Unknown");
   }
   function colorOf(id) {
     var k = chars.findIndex(function (c) { return c.id === id; });
     if (id === "dana" || id === "leo" || id === "sam") return "var(--" + id + ")";
+    if (k < 0 && guestObj(id)) return "#8a8580";
     return PALETTE[(k < 0 ? 0 : k) % PALETTE.length];
   }
   function withColor(node, id) { node.style.setProperty("--me", colorOf(id)); return node; }
@@ -765,6 +767,7 @@
   }
   function hideBubbles() {
     Object.keys(sprites).forEach(function (id) { sprites[id].root.classList.remove("talking"); sprites[id].bub.classList.remove("waiting"); });
+    GUESTS.forEach(function (g) { if (g.node) g.node.classList.remove("talking"); });
   }
   function playTurn(k) {
     clearList(flowTimers); clearList(autoTimers);
@@ -772,7 +775,8 @@
     hideBubbles();
     turnPos = k;
     renderLogState();
-    var b = beats[k], sp = sprites[b.speaker];
+    var b = beats[k], sp = spk(b.speaker);
+    guestAtCounter(b.speaker);
     fullText = b.text;
     if (!sp) { typingDone(); return; }
     sp.root.classList.add("talking");
@@ -790,13 +794,13 @@
   function completeTyping() {
     if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
     var b = beats[turnPos];
-    if (b && sprites[b.speaker]) sprites[b.speaker].txt.textContent = fullText;
+    if (b && spk(b.speaker)) spk(b.speaker).txt.textContent = fullText;
     typingDone();
   }
   function typingDone() {
     typing = false;
     var b = beats[turnPos];
-    if (b && sprites[b.speaker] && !playing) sprites[b.speaker].bub.classList.add("waiting");
+    if (b && spk(b.speaker) && !playing) spk(b.speaker).bub.classList.add("waiting");
     if (turnPos >= beats.length - 1) finishSlot();
     else if (playing) later(autoTimers, function () { playTurn(turnPos + 1); }, holdFor(b && b.text));
   }
@@ -815,6 +819,7 @@
       toast(nameOf(o.character) + " learned about the offer from " + nameOf(o.from), true);
     });
     void before;
+    if (dataGuests) arr(s.guests).forEach(function (sg) { if (sg && sg.served) later(guestTimers, function () { guestLeave(guestObj(sg.id)); }, 600 / speed); });
     renderLogState();
     if (playing) later(autoTimers, function () { go(idx + 1, true); }, beats.length ? holdFor(beats[beats.length - 1].text) : 1700 / speed);
   }
@@ -839,7 +844,7 @@
   function hideBubbleHints() { Object.keys(sprites).forEach(function (id) { sprites[id].bub.classList.remove("waiting"); }); }
   function setPlaying(on) {
     playing = on;
-    if (on) resume(); else { clearList(autoTimers); hideGuests(); }
+    if (on) resume(); else { clearList(autoTimers); if (!dataGuests) hideGuests(); }
     updateHud();
   }
   function restart() {
@@ -861,13 +866,28 @@
   ];
   var GUEST_LINES = ["One oat latte, please.", "Medium drip, to go.", "Could I get a cortado?", "Two croissants and a cold brew.", "A flat white, thanks.", "Just an iced tea, please."];
   var DOOR = [560, 560], AISLE = [600, 330];
+  var dataGuests = false; // true when the log simulates guests itself (slot.guests)
+  function guestObj(id) { return GUESTS.find(function (g) { return g.id === id; }) || null; }
+  function spk(id) {
+    if (sprites[id]) return sprites[id];
+    var g = dataGuests ? guestObj(id) : null;
+    return g && g.node ? { root: g.node, txt: g.txt, bub: g.bub } : null;
+  }
   function buildGuests() {
     var layer = $("guests"); layer.innerHTML = "";
+    dataGuests = slots.some(function (s) { return arr(s.guests).length > 0; });
+    arr(data.guests).concat(arr(slots.map(function (s) { return arr(s.guests); })).reduce(function (a, b) { return a.concat(b); }, [])).forEach(function (dg, k) {
+      if (!dg || !dg.id || charObj(dg.id)) return;
+      var g = guestObj(dg.id);
+      if (!g) GUESTS.push(g = { id: dg.id, color: "#8a8580", spot: [k % 2 ? 312 : 672, 205], start: 0 });
+      if (dg.name) g.name = dg.name;
+      if (!g.name) g.name = String(dg.id).charAt(0).toUpperCase() + String(dg.id).slice(1);
+    });
     GUESTS.forEach(function (g) {
       var n = el("div", "guest"); n.style.setProperty("--me", g.color);
       n.innerHTML = figureSvg(g.id, "");
       var b = el("div", "gbub"); b.appendChild(el("span", "who", g.name + ", guest"));
-      g.txt = el("span"); b.appendChild(g.txt); n.appendChild(b);
+      g.txt = el("span"); b.appendChild(g.txt); n.appendChild(b); g.bub = b;
       layer.appendChild(n); g.node = n;
       gPlace(g, DOOR, 0);
     });
@@ -889,8 +909,40 @@
     g.node.classList.add("walking"); gPlace(g, p, ms);
     later(guestTimers, function () { gWalk(g, path.slice(1), then); }, ms);
   }
+  function guestAtCounter(id) {
+    // a guest about to speak must already be standing at the counter (after a skip or Prev/Next)
+    var g = !sprites[id] && dataGuests ? guestObj(id) : null;
+    if (!g || !g.node || (g.node.classList.contains("show") && g.at === g.spot)) return;
+    clearList(guestTimers); g.node.classList.remove("walking");
+    gPlace(g, g.spot, 0); g.node.classList.add("show");
+  }
+  function guestLeave(g) {
+    if (!g || !g.node) return;
+    g.node.classList.remove("talking");
+    if (rm()) { g.node.classList.remove("show"); return; }
+    gWalk(g, [AISLE, DOOR], function () { g.node.classList.remove("show"); });
+  }
+  function runDataGuests(i) {
+    if (i >= N) return;
+    arr(slots[i].guests).forEach(function (sg) {
+      var g = sg && guestObj(sg.id);
+      if (!g || !g.node) return;
+      var r = rm();
+      gPlace(g, r ? g.spot : DOOR, 0);
+      later(guestTimers, function () {
+        g.node.classList.add("show");
+        var arrive = function () {
+          if (sg.served) return; // its line plays as a normal turn; it leaves when the talk ends
+          g.txt.textContent = "..."; g.node.classList.add("talking");
+          later(guestTimers, function () { guestLeave(g); }, 1800 / speed);
+        };
+        if (r) arrive(); else gWalk(g, [AISLE, g.spot], arrive);
+      }, 40);
+    });
+  }
   function runGuests(i) {
     hideGuests();
+    if (dataGuests) { runDataGuests(i); return; }
     if (!playing || i >= N - 1) return; // the 5pm finale stays clean
     GUESTS.forEach(function (g, k) {
       if (!g.node || (g.skipFirst && i === 0)) return;
@@ -957,7 +1009,7 @@
   /* ---------- side panels ---------- */
   function convoNode(c, slotIdx) {
     var box = el("div", "convo");
-    var who = arr(c.participants).map(nameOf).join(", ");
+    var who = arr(c.guests).concat(arr(c.participants)).map(nameOf).join(", ");
     box.appendChild(el("div", "where", zoneName(c.zone) + (who ? ": " + who : "")));
     arr(c.turns).forEach(function (t) {
       if (!t || !t.speaker) return;

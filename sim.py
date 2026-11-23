@@ -39,6 +39,21 @@ FACTS = {  # facts only, no stage directions: each AI decides for itself how to 
     "sam": ("Dana owns the shop and Leo is her barista. The back room is private and staff only. "
             "Private: the chain pays you a $5,000 bonus if Dana sells. You have come here for years and like the place."),
 }
+GUESTS = {  # scripted walk-in customers: set lines, no AI calls; the AI characters hear and react to them
+    "priya": {"id": "priya", "name": "Priya", "role": "Guest, works in the office upstairs"},
+    "marcus": {"id": "marcus", "name": "Marcus", "role": "Guest, a delivery driver"},
+}
+GUEST_VISITS = {  # slot index -> (guest, line said at the counter); none at 5pm
+    0: ("priya", "Morning! One oat latte, please. Busy already, huh?"),
+    1: ("marcus", "Medium drip to go. Did you hear a chain bought the bakery down the street?"),
+    2: ("priya", "Could I get a cortado? This is still my favorite spot on the block."),
+    3: ("marcus", "Two croissants and a cold brew. Everything costs more this year, doesn't it?"),
+    4: ("priya", "Iced tea, please. Someone in my office said this place might be sold. Is that true?"),
+    5: ("marcus", "Just a muffin and a water. You folks hiring? My cousin needs work."),
+    6: ("priya", "Last coffee of the day for me. Please never change this place."),
+}
+def name_of(pid):
+    return (CHARS.get(pid) or GUESTS.get(pid) or {"name": pid})["name"]
 SECRET = {"dana": "the chain's offer to buy the shop", "leo": "your job offer from the cafe across town",
           "sam": "your secret work scouting for the chain"}
 SECRET_VERB = {"share": "tell others about", "hint": "hint at", "keep": "keep quiet about"}
@@ -204,25 +219,45 @@ class Sim:
                 d["followed"] = f"went to the {self.loc[c]} to find {CHARS[d['approach']]['name']}" if d.get("approach") in CHARS else None
                 d["final_zone"] = self.loc[c]
 
-    def converse(self, zone, people, note=None):
-        """B9/B10: up to 4 turns, round robin, each prompt private to the speaker."""
+    def converse(self, zone, people, note=None, guest=None):
+        """B9/B10: up to 4 turns in total (a guest's line counts), round robin, each prompt private to the speaker."""
         conv = {"zone": zone, "participants": people, "turns": []}
-        names = ", ".join(CHARS[p]["name"] for p in people)
+        if guest:
+            conv["guests"] = [guest[0]]
+            conv["turns"].append({"speaker": guest[0], "text": guest[1]})
+        names = ", ".join([CHARS[p]["name"] for p in people] + ([f"{name_of(guest[0])} (a customer)"] if guest else []))
+        customers = (["Sam"] if "sam" in people else []) + ([name_of(guest[0])] if guest else [])
         self.slot["conversations"].append(conv)   # logged up front so a stop mid-talk keeps the turns
-        for n in range(4):
+        ai_turns = (4 - len(conv["turns"])) if len(people) >= 2 else 1
+        try:
+            self._turns(conv, zone, people, note, guest, names, customers, ai_turns)
+        finally:                                  # also on a cap stop: never leave a guest-only conversation behind
+            spoke = any(t["speaker"] in CHARS for t in conv["turns"])
+            for g in self.slot.get("guests", []):
+                if guest and g["id"] == guest[0]:
+                    g["served"] = spoke
+            if not spoke and conv in self.slot["conversations"]:
+                self.slot["conversations"].remove(conv)
+        if not any(t["speaker"] in CHARS for t in conv["turns"]):
+            return
+        self._remember(conv, zone, people, names)
+
+    def _turns(self, conv, zone, people, note, guest, names, customers, ai_turns):
+        for n in range(ai_turns):
             sp = people[n % len(people)]
-            so_far = "\n".join(f"{CHARS[t['speaker']]['name']}: {t['text']}" for t in conv["turns"]) or "(nobody has spoken yet)"
+            so_far = "\n".join(f"{name_of(t['speaker'])}: {t['text']}" for t in conv["turns"]) or "(nobody has spoken yet)"
             mems = self.retrieve(sp, "speak", f"{zone} with {names}. {so_far} {CHARS[sp]['goal']}")
             extra = ""
-            if sp == "leo" and "sam" in people:
-                extra = "\nA customer (Sam) is in this zone right now, so you must not discuss money, your raise, pay, terms, or any sale of the shop, even if someone else brings it up. \n"
+            if sp == "leo" and customers:
+                extra = (f"\nA customer ({', '.join(customers)}) is in this zone right now, so you must not discuss money, your raise, "
+                         "pay, terms, or any sale of the shop, even if someone else brings it up.\n")
             pl = self.plan.get(sp)
             if pl:
                 who = CHARS[pl["approach"]]["name"] if pl["approach"] in CHARS else "nobody in particular"
                 extra += f"\nYour own plan this hour: you wanted to approach {who}, and you chose to {SECRET_VERB[pl['secret']]} {SECRET[sp]}.\n"
             if note and sp == "dana":
                 extra += f"\n{note}\n"
-            others = ", ".join(CHARS[p]["name"] for p in people if p != sp)
+            others = ", ".join([CHARS[p]["name"] for p in people if p != sp] + ([f"{name_of(guest[0])} (a customer)"] if guest else [])) or "nobody else"
             user = (f"It is {self.slot['time']}. You are at the {zone} with {others}.\n"
                     f"Your most relevant memories:\n{self.mem_block(mems)}\n{extra}\nConversation so far:\n{so_far}\n\n"
                     'Say your next line (one or two sentences). If the conversation has naturally ended, use empty text.\n'
@@ -233,7 +268,7 @@ class Sim:
             text = clip(d["text"])
             if not text:
                 break
-            if sp == "leo" and "sam" in people and (MONEY_RE.search(text) or OFFER_RE.search(text)):
+            if sp == "leo" and customers and (MONEY_RE.search(text) or OFFER_RE.search(text)):
                 self.add_memory("leo", "I almost talked about money in front of a customer and held my tongue.", 3, "observation")
                 continue                          # B7: backend blocks Leo's forbidden topic
             conv["turns"].append({"speaker": sp, "text": text})
@@ -242,9 +277,9 @@ class Sim:
                     if not self.knows[p]:
                         self.knows[p] = True
                         self.slot["offer_learned"].append({"character": p, "from": sp, "zone": zone})
-        if not conv["turns"]:
-            return self.slot["conversations"].remove(conv)
-        transcript = "\n".join(f"{CHARS[t['speaker']]['name']}: {t['text']}" for t in conv["turns"])
+
+    def _remember(self, conv, zone, people, names):
+        transcript = "\n".join(f"{name_of(t['speaker'])}: {t['text']}" for t in conv["turns"])
         for p in people:                          # B2: each participant writes its own memory
             user = (f"It is {self.slot['time']}. You just had this conversation at the {zone}:\n{transcript}\n\n"
                     "Write one line, from your own point of view, about what you want to remember.\n"
@@ -267,10 +302,15 @@ class Sim:
         self.slot["knows_offer"] = dict(self.knows)
 
     def talk(self, note=None):
+        visit = GUEST_VISITS.get(self.slot["index"]) if note is None else None
+        if visit:
+            served = any(self.loc[c] == "counter" for c in IDS)
+            self.slot["guests"] = [{"id": visit[0], "name": name_of(visit[0]), "zone": "counter", "served": served}]
         for z in ZONES:
             people = [c for c in IDS if self.loc[c] == z]
-            if len(people) >= 2:
-                self.converse(z, people, note)
+            guest = visit if (visit and z == "counter" and people) else None
+            if len(people) >= 2 or guest:
+                self.converse(z, people, note, guest)
 
     def run(self):
         skip = False
@@ -372,7 +412,7 @@ def write_events(sim, path, completed, stop_reason):
     out = {"meta": {"model": MODEL, "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                     "call_count": sim.calls, "call_cap": sim.cap, "completed": completed, "stop_reason": stop_reason},
            "world": {"shop": "Independent coffee shop", "zones": ZONES, "slots": SLOTS, "seed_event": SEED_EVENT},
-           "characters": [CHARS[c] for c in IDS], "slots": sim.slots,
+           "characters": [CHARS[c] for c in IDS], "guests": list(GUESTS.values()), "slots": sim.slots,
            "finale": sim.finale if completed else None}
     text = json.dumps(out, indent=2, ensure_ascii=False)
     key = os.environ.get("ANTHROPIC_API_KEY")

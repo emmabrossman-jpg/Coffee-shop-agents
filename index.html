@@ -98,11 +98,15 @@
   .stage > svg.map { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .tint { position: absolute; inset: 0; background: var(--tint); opacity: 0; pointer-events: none; transition: opacity 1.2s; mix-blend-mode: multiply; }
   .sprites { position: absolute; inset: 0; }
-  /* background guests: purely visual, behind the AI characters, never clickable */
-  .guests { position: absolute; inset: 0; pointer-events: none; }
-  .guest { position: absolute; width: 4.3%; transform: translate(-50%, -100%); opacity: 0; pointer-events: none;
+  /* guests: drawn above the characters so they are easy to spot, never clickable */
+  .guests { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+  .guest { position: absolute; width: 4.9%; transform: translate(-50%, -100%); opacity: 0; pointer-events: none;
     font-size: clamp(8px, 1.05cqw, 11.5px); transition: opacity 0.4s, left linear, top linear; }
-  .guest.show { opacity: 0.72; }
+  .guest.show { opacity: 1; }
+  .gtag { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); white-space: nowrap; font-weight: 700;
+    background: #6f6a64; color: #fff; border-radius: 999px; padding: 0 0.6em; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,0.25); }
+  .gtag small { font-weight: 600; opacity: 0.85; }
+  .guest.talking .gtag { display: none; }
   .guest svg { width: 100%; height: auto; display: block; overflow: visible; }
   .guest.walking svg { animation: bob 0.32s ease-in-out infinite; }
   .gbub { position: absolute; left: 50%; bottom: calc(100% + 0.5em); transform: translateX(-50%); width: max-content; max-width: clamp(100px, 24cqw, 220px);
@@ -885,7 +889,7 @@
     });
     GUESTS.forEach(function (g) {
       var n = el("div", "guest"); n.style.setProperty("--me", g.color);
-      n.innerHTML = figureSvg(g.id, "");
+      n.innerHTML = figureSvg(g.id, "") + '<span class="gtag">' + String(g.name).replace(/[<>&"]/g, "") + ' <small>guest</small></span>';
       var b = el("div", "gbub"); b.appendChild(el("span", "who", g.name + ", guest"));
       g.txt = el("span"); b.appendChild(g.txt); n.appendChild(b); g.bub = b;
       layer.appendChild(n); g.node = n;
